@@ -23,21 +23,64 @@ namespace StardewNutrition
 		}
 	}
 
-	public class NutritionMap {
-		public int mapMana { get; set; }
-		public SoilNutrition[,] mapData { get; set; }
-		public Dictionary<ValueTuple,int> magicCrops { get; set; }
+	public class NutritionMap
+	{
+		public int ManaMax { get; set; }
+		public int MapMana { get; set; }
 
-		public NutritionMap (int sizeX, int sizeY, int mana){
-			mapMana = mana;
-			mapData = new SoilNutrition [sizeX, sizeY];
-			magicCrops = new Dictionary<ValueTuple,int> ();
+		public SoilNutrition[,] MapData { get; set; }
+
+		public Dictionary<(int, int), int> MagicCrops { get; set; }
+
+		public NutritionMap(int sizeX, int sizeY, int initialMana)
+		{
+			MapMana = initialMana;
+			MapData = new SoilNutrition[sizeX, sizeY];
+			MagicCrops = new Dictionary<(int, int), int>();
+		}
+
+		public void AddMagicCrop(int x, int y, int manaCost)
+		{
+			MagicCrops.Add((x, y), manaCost);
+		}
+
+		public void RemoveMagicCrop(int x, int y)
+		{
+			MagicCrops.Remove((x, y));
+		}
+
+		public void AddMana(int m)
+		{
+			MapMana += m;
+			if (MapMana > ManaMax)
+			{
+				MapMana = ManaMax;
+			}
+		}
+
+		public void RemoveMana(int m)
+		{
+			MapMana -= m;
+			if (MapMana < 0)
+			{
+				MapMana = 0;
+			}
 		}
 	}
-	public class nutritionHandler {
+
+	public class nutritionHandler
+	{
+
+		public IModHelper gameHandler { get; }
 		public int nutriMin = 0;
 		public int nutriMax = 100;
-		public void SetNitro(SoilNutrition dirtData, int n) 
+
+		public nutritionHandler(IModHelper helper)
+		{
+			gameHandler = helper;
+		}
+
+		public void SetNitro(SoilNutrition dirtData, int n)
 		{
 			if (n > nutriMax)
 			{
@@ -52,6 +95,7 @@ namespace StardewNutrition
 				dirtData.nitro = n;
 			}
 		}
+
 		public void SetPhos(SoilNutrition dirtData, int p)
 		{
 			if (p > nutriMax)
@@ -67,6 +111,7 @@ namespace StardewNutrition
 				dirtData.phos = p;
 			}
 		}
+
 		public void SetpH(SoilNutrition dirtData, int x)
 		{
 			if (x > nutriMax)
@@ -98,9 +143,20 @@ namespace StardewNutrition
 				dirtData.iridium = i;
 			}
 		}
-
-
-
 	}
 
+	internal sealed class ModEntry : Mod
+	{
+		public nutritionHandler nHandler { get; set; }
+		/*********
+		** Public methods
+		*********/
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
+		{
+			nHandler = new nutritionHandler(helper);
+		}
+	}
+	
 }
