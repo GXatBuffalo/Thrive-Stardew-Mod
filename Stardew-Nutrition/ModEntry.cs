@@ -9,33 +9,36 @@ namespace StardewNutrition
 {
 	public class SoilNutrition
 	{
-		public int nitro { get; set; }
-		public int phos { get; set; }
-		public int pH { get; set; }
-		public int iridium { get; set; }
+		public int Nitro { get; set; }
+		public int Phos { get; set; }
+		public int PH { get; set; }
+		public int Iridium { get; set; }
 
-		public SoilNutrition(int a, int b, int c, int d, int e)
+		public SoilNutrition(int nitro, int phos, int ph, int iridium)
 		{
-			nitro = a;
-			phos = b;
-			pH = c;
-			iridium = d;
+			Nitro = nitro;
+			Phos = phos;
+			PH = ph;
+			Iridium = iridium;
 		}
 	}
+
 
 	public class NutritionMap
 	{
 		public int ManaMax { get; set; }
-		public int MapMana { get; set; }
-
-		public SoilNutrition[,] MapData { get; set; }
-
+		public int MapMana { get; set; } = 120;
+		public SoilNutrition[][] MapData { get; set; }
 		public Dictionary<(int, int), int> MagicCrops { get; set; }
 
 		public NutritionMap(int sizeX, int sizeY, int initialMana)
 		{
 			MapMana = initialMana;
-			MapData = new SoilNutrition[sizeX, sizeY];
+			MapData = new SoilNutrition[sizeX][];
+			for (int i = 0; i < sizeX; i++)
+			{
+				MapData[i] = new SoilNutrition[sizeY];
+			}
 			MagicCrops = new Dictionary<(int, int), int>();
 		}
 
@@ -68,94 +71,76 @@ namespace StardewNutrition
 		}
 	}
 
-	public class nutritionHandler
+	public class NutritionHandler
 	{
-
 		public IModHelper gameHandler { get; }
 		public int nutriMin = 0;
 		public int nutriMax = 100;
+		public NutritionMap CurrentMap {  get; private set; }
+		public string CurrentKey { get; private set; }
 
-		public nutritionHandler(IModHelper helper)
+		public NutritionHandler(IModHelper helper)
 		{
 			gameHandler = helper;
 		}
 
+		private int rangeLimitHelper(int value, int min, int max)
+		{
+			return Math.Min(Math.Max(value, min), max);
+		}
+
 		public void SetNitro(SoilNutrition dirtData, int n)
 		{
-			if (n > nutriMax)
-			{
-				dirtData.nitro = nutriMax;
-			}
-			else if (n < nutriMin)
-			{
-				dirtData.nitro = nutriMin;
-			}
-			else
-			{
-				dirtData.nitro = n;
-			}
+			dirtData.Nitro = rangeLimitHelper(n, nutriMin, nutriMax);
 		}
 
 		public void SetPhos(SoilNutrition dirtData, int p)
 		{
-			if (p > nutriMax)
-			{
-				dirtData.phos = nutriMax;
-			}
-			else if (p < nutriMin)
-			{
-				dirtData.phos = nutriMin;
-			}
-			else
-			{
-				dirtData.phos = p;
-			}
+			dirtData.Phos = rangeLimitHelper(p, nutriMin, nutriMax);
 		}
 
 		public void SetpH(SoilNutrition dirtData, int x)
 		{
-			if (x > nutriMax)
-			{
-				dirtData.pH = nutriMax;
-			}
-			else if (x < nutriMin)
-			{
-				dirtData.pH = nutriMin;
-			}
-			else
-			{
-				dirtData.pH = x;
-			}
+			dirtData.PH = rangeLimitHelper(x, nutriMin, nutriMax);
 		}
 
 		public void SetIridium(SoilNutrition dirtData, int i)
 		{
-			if (i > nutriMax)
-			{
-				dirtData.iridium = nutriMax;
-			}
-			else if (i < nutriMin)
-			{
-				dirtData.iridium = nutriMin;
-			}
-			else
-			{
-				dirtData.iridium = i;
-			}
+			dirtData.Iridium = rangeLimitHelper(i, nutriMin, nutriMax);
+		}
+
+		public void starterMap(){
+			int widthInPixels = Game1.currentLocation.Map.DisplayWidth;
+			int heightInPixels = Game1.currentLocation.Map.DisplayHeight;
+
+			int widthInTiles = widthInPixels / Game1.tileSize;
+			int heightInTiles = heightInPixels / Game1.tileSize;
+
+			Random rand = new Random();
+
+			CurrentMap = new NutritionMap(widthInTiles, heightInTiles, rand.Next(10,30));
+			CurrentKey = Game1.currentLocation.Name;
+		}
+
+		public void getCurrentMap()
+		{
+			CurrentKey = Game1.currentLocation.Name;
+			CurrentMap = gameHandler.Data.ReadSaveData<NutritionMap>(CurrentKey);
+		}
+
+		public void SaveCurrentMap()
+		{
+			gameHandler.Data.WriteSaveData(CurrentKey, CurrentMap);
 		}
 	}
 
 	internal sealed class ModEntry : Mod
 	{
-		public nutritionHandler nHandler { get; set; }
-		/*********
-		** Public methods
-		*********/
-		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
-		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public NutritionHandler nHandler { get; set; }
+
 		public override void Entry(IModHelper helper)
 		{
-			nHandler = new nutritionHandler(helper);
+			nHandler = new NutritionHandler(helper);
 		}
 	}
 	
