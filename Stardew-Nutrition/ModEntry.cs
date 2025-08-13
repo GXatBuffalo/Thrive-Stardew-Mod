@@ -8,22 +8,18 @@ using StardewValley;
 
 namespace StardewNutrition
 {
+
+
 	public class SoilNutrition
 	{
 		public string CropID { get; set; }
-		public int Nitro { get; set; }
-		public int Phos { get; set; }
-		public int PH { get; set; }
-		public int Iridium { get; set; }
+		public List<int> SoilStats { get; set; }
 		public List<int> Health { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
 
 		public SoilNutrition(string id, int nitro, int phos, int ph, int iridium)
 		{
 			CropID = id;
-			Nitro = nitro;
-			Phos = phos;
-			PH = ph;
-			Iridium = iridium;
+			SoilStats = new List<int> { nitro, phos, ph, iridium };
 		}
 	}
 
@@ -82,7 +78,7 @@ namespace StardewNutrition
 		public NutritionMap CurrentMap {  get; private set; }
 		public string CurrentKey { get; private set; }
 
-		public NutritionHandler(IModHelper helper){ 
+		public NutritionHandler(IModHelper helper)
 		{
 			gameHandler = helper;
 		}
@@ -133,43 +129,30 @@ namespace StardewNutrition
 			gameHandler.Data.WriteSaveData(CurrentKey, CurrentMap);
 		}
 
-		//seems inefficient. The 4 stats in SoilNutrition shall be saved in a list going forward.
 		public void UpdateSoilAndCropHealth(SoilNutrition sn, CropData cd){
-			if (Math.Abs(sn.Nitro - cd.Requirements[0]) <= Math.Abs(cd.Requirements[1])){
-				sn.Health[0] += 10;
-			}
-			else{
-				sn.Health[0] -= 10;
-			}
-			if (Math.Abs(sn.Phos - cd.Requirements[2]) <= Math.Abs(cd.Requirements[3]))
+			for (int x = 0; x < 4; x += 1)
 			{
-				sn.Health[1] += 10;
+				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
+				{
+					sn.Health[x] += 10;
+				}
+				else
+				{
+					sn.Health[x] -= 18;
+				}
+				sn.SoilStats[x] -= cd.SoilDeprecation[x];
 			}
-			else
-			{
-				sn.Health[1] -= 10;
+			if(cd.isMagic){
+				if (Math.Abs(sn.SoilStats[4] - cd.Requirements[88]) <= Math.Abs(cd.Requirements[9]))
+				{
+					sn.Health[4] += 10;
+				}
+				else
+				{
+					sn.Health[4] -= 18;
+				}
+				sn.SoilStats[4] -= cd.SoilDeprecation[4];
 			}
-			if (Math.Abs(sn.PH - cd.Requirements[4]) <= Math.Abs(cd.Requirements[5]))
-			{
-				sn.Health[2] += 10;
-			}
-			else
-			{
-				sn.Health[2] -= 10;
-			}
-			if (Math.Abs(sn.Iridium - cd.Requirements[6]) <= Math.Abs(cd.Requirements[7]))
-			{
-				sn.Health[3] += 10;
-			}
-			else
-			{
-				sn.Health[3] -= 10;
-			}
-			sn.Nitro -= cd.SoilDeprecation[0];
-			sn.Phos -= cd.SoilDeprecation[1];
-			sn.PH -= cd.SoilDeprecation[2];
-			sn.Iridium -= cd.SoilDeprecation[3];
-		}
 		}
 
 	public class CropData
