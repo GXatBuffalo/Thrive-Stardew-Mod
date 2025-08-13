@@ -8,8 +8,6 @@ using StardewValley;
 
 namespace StardewNutrition
 {
-
-
 	public class SoilNutrition
 	{
 		public string CropID { get; set; }
@@ -75,7 +73,7 @@ namespace StardewNutrition
 		public IModHelper gameHandler { get; }
 		public int nutriMin = 0;
 		public int nutriMax = 1000;
-		public NutritionMap CurrentMap {  get; private set; }
+		public NutritionMap CurrentMap { get; private set; }
 		public string CurrentKey { get; private set; }
 
 		public NutritionHandler(IModHelper helper)
@@ -90,31 +88,32 @@ namespace StardewNutrition
 
 		public void SetNitro(SoilNutrition dirtData, int n)
 		{
-			dirtData.Nitro = rangeLimitHelper(n, nutriMin, nutriMax);
+			dirtData.SoilStats[0] = rangeLimitHelper(n, nutriMin, nutriMax);
 		}
 
 		public void SetPhos(SoilNutrition dirtData, int p)
 		{
-			dirtData.Phos = rangeLimitHelper(p, nutriMin, nutriMax);
+			dirtData.SoilStats[1] = rangeLimitHelper(p, nutriMin, nutriMax);
 		}
 
 		public void SetpH(SoilNutrition dirtData, int x)
 		{
-			dirtData.PH = rangeLimitHelper(x, nutriMin, nutriMax);
+			dirtData.SoilStats[2] = rangeLimitHelper(x, nutriMin, nutriMax);
 		}
 
 		public void SetIridium(SoilNutrition dirtData, int i)
 		{
-			dirtData.Iridium = rangeLimitHelper(i, nutriMin, nutriMax);
+			dirtData.SoilStats[3] = rangeLimitHelper(i, nutriMin, nutriMax);
 		}
 
-		public void starterMap(){
+		public void starterMap()
+		{
 			int width = Game1.currentLocation.Map.Layers[0].LayerWidth;
 			int height = Game1.currentLocation.Map.Layers[0].LayerHeight;
 
 			Random rand = new Random();
 
-			CurrentMap = new NutritionMap(width, height, rand.Next(10,30));
+			CurrentMap = new NutritionMap(width, height, rand.Next(10, 30));
 			CurrentKey = Game1.currentLocation.Name;
 		}
 
@@ -129,7 +128,8 @@ namespace StardewNutrition
 			gameHandler.Data.WriteSaveData(CurrentKey, CurrentMap);
 		}
 
-		public void UpdateSoilAndCropHealth(SoilNutrition sn, CropData cd){
+		public void UpdateSoilAndCropHealth(SoilNutrition sn, CropData cd)
+		{
 			for (int x = 0; x < 4; x += 1)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
@@ -142,7 +142,8 @@ namespace StardewNutrition
 				}
 				sn.SoilStats[x] -= cd.SoilDeprecation[x];
 			}
-			if(cd.isMagic){
+			if (cd.isMagic)
+			{
 				if (Math.Abs(sn.SoilStats[4] - cd.Requirements[88]) <= Math.Abs(cd.Requirements[9]))
 				{
 					sn.Health[4] += 10;
@@ -154,6 +155,7 @@ namespace StardewNutrition
 				sn.SoilStats[4] -= cd.SoilDeprecation[4];
 			}
 		}
+	}
 
 	public class CropData
 	{
@@ -192,5 +194,4 @@ namespace StardewNutrition
 			nHandler = new NutritionHandler(helper);
 		}
 	}
-	
 }
