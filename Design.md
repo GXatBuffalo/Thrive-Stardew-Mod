@@ -267,6 +267,19 @@ graph TD
 ## 6. Trade-offs & Decisions
 
 
+## 7. Glossary
+
+| Term                     | Definition                                                                                                       |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **SMAPI**                | *Stardew Modding API*, the main modding framework for Stardew Valley, providing hooks into game events and code. |
+| **Mod**                  | Short for *modification*. A package of custom code, assets, or data that alters or extends the base game’s behavior without modifying the original game files directly. In Stardew Valley, mods are typically loaded by SMAPI.                   |
+| **Content Patcher (CP)** | A framework mod that lets other mods change game assets and data via JSON, without direct code changes.          |
+| **Event Trigger**        | A gameplay moment (e.g., `DayStarted`, `CropHarvested`) that SMAPI exposes for mod logic to run.                 |
+| **Save Data**            | Game or mod state stored between sessions, usually as JSON or XML in Stardew modding.                            |
+| **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, items). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
+| **i18n**                 | A format mods use to provide ease of translations.                                                               | 
+
+
 ---
 
 ## 8. References
