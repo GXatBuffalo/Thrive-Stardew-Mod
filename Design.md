@@ -46,20 +46,20 @@ The philosophy is to **blend realism with game balance**:
 - **Sustainability Incentives** – Balance short-term profits with long-term farm health to avoid soil degradation and reduced productivity.
 - **Tool Integration** – Custom in-game tools (e.g., Soil/Crop Analyzer) for checking soil and crop data.
 - **UI Enhancements** – Additional HUD elements and menus to present soil status, crop recommendations, and nutrient breakdowns.
-- **Event Integration** – New gameplay events that introduce mechanics, encourage sustainable farming practices, and provide the player the in-game tools.
+- **Event Integration** – In-game events that introduce mod mechanics, encourage sustainable farming practices, and provide the player the in-game tools.
 - **Mod Compatibility** – Designed for easy integration with popular crop mods and content packs via Content Patcher and SMAPI.
 
 ---
 
 ## 3. Architecture
 
-# Feature Roadmap to Architecture Mapping
+**Feature Roadmap to Architecture Mapping**
 
 This table maps planned features from the roadmap to the architecture layers they will primarily affect. It helps maintain clarity on where changes should occur and ensures new functionality is developed in the appropriate part of the codebase.
 
 | Roadmap Version & Feature                                          | Domain Layer | Services Layer | Items Layer | UI Layer   | Events Layer | ModEntry    |
 |--------------------------------------------------------------------|--------------|----------------|-------------|------------|--------------|-------------|
-| **v0.1 – Basic Core Systems**                                      | ✅           | ✅            |             |            |              | ✅          |
+| **v0.1 – Basic Core Systems**                                      | ✅           | ✅             |             |            |              | ✅         |
 | Crop & soil data structures                                        | ✅           |                |             |            |              |             |
 | Initialization states                                              | ✅           |                |             |            |              |             |
 | Save/load data via SMAPI                                           |              | ✅             |             |            |              | ✅          |
@@ -70,26 +70,26 @@ This table maps planned features from the roadmap to the architecture layers the
 | **v0.3 – Game Integration**                                        | ✅           | ✅             | ✅          |           |              | ✅          |
 | Hook into game events                                              |              | ✅             |             |            |              | ✅          |
 | Custom tool/item to measure soil/crop health                       |              | ✅             | ✅          |            |              |             |
-| Custom items to improve soil quality                               |              | ✅             | ✅          |            |              | ✅         |
-| Discourage farming on non-farm maps                                |              | ✅             |             |            |              | ✅         |
-| **v0.4 – Compatibility & Edge Cases**                              | ✅           | ✅             |             |            |              |            |
-| Context-tag-based support                                          | ✅           | ✅             |             |            |              |            |
-| Edge-case item support                                             | ✅           | ✅             |             |            |              |            |
-| **v0.5 – Player Interactions & UI**                                |              | ✅             | ✅          | ✅         |              |            |
-| HUD for soil health                                                |              | ✅             | ✅          | ✅         |              |            |
-| HUD for crop depletion/replenishment                               |              | ✅             | ✅          | ✅         |              |            |
-| Menu for known data                                                |              | ✅             |             | ✅         |              |            |
-| Menu for current map data                                          |              | ✅             |             | ✅         |              |            |
+| Custom items to improve soil quality                               |              | ✅             | ✅          |            |              | ✅          |
+| Discourage farming on non-farm maps                                |              | ✅             |             |            |              | ✅          |
+| **v0.4 – Compatibility & Edge Cases**                              | ✅           | ✅             |             |            |              |             |
+| Context-tag-based support                                          | ✅           | ✅             |             |            |              |             |
+| Edge-case item support                                             | ✅           | ✅             |             |            |              |             |
+| **v0.5 – Player Interactions & UI**                                |              | ✅             | ✅          | ✅         |              |             |
+| HUD for soil health                                                |              | ✅             | ✅          | ✅         |              |             |
+| HUD for crop depletion/replenishment                               |              | ✅             | ✅          | ✅         |              |             |
+| Menu for known data                                                |              | ✅             |             | ✅         |              |             |
+| Menu for current map data                                          |              | ✅             |             | ✅         |              |             |
 | Integration with Better Game Menu                                  |              |                |              | ✅         |              | ✅         |
-| **v0.6 – Configurability & Code Quality**                          |              |                |              |            |              |            |
+| **v0.6 – Configurability & Code Quality**                          | ✅           | ✅             |             |             |              |            |
 | Additional and adjustable number of soil variables                 | ✅           | ✅             |             |             |              |            |
-| Config file support                                                |              | ✅             |              | ✅         |              | ✅         |
+| Config file, GMCM support                                          |              | ✅             |              | ✅         |              | ✅         |
 | i18n support                                                       |              |                |              | ✅         |              | ✅         |
 | Tractor mod compatibility                                          |              | ✅             |              |            |              | ✅         |
-| **v0.8 – Lore Integration**                                        |              | ✅             | ✅           | ✅         | ✅          | ✅         |
-| Demetrius mail & events                                            |              |                |              |             | ✅          | ✅         |
-| Farming-related character events                                   |              |                |              |             | ✅          | ✅         |
-| ConversationTopics                                                 | ✅           | ✅             |             | ✅          | ✅          | ✅         |
+| **v0.8 – Lore Integration**                                        |              |                |              | ✅         | ✅           | ✅         |
+| Demetrius mail & events                                            |              |                |              |            | ✅           | ✅         |
+| Farming-related character events                                   |              |                |              |            | ✅           | ✅         |
+| ConversationTopics                                                 |              | ✅             |              |            | ✅           |            |
 
 ✅ = Primary layer where the feature is implemented
 
@@ -112,7 +112,7 @@ If utility or helper methods grow in number:
 - Avoid bloating domain classes with unrelated helper logic.
 
 ### 3. Event-Driven Communication
-For loose coupling:
+For a highly decoupled project:
 - Keep a lightweight event system for communication between modules.
 - Keep ModEntry as the registration point, not the main logic holder.
 
@@ -148,7 +148,7 @@ graph TD
         CP[Content Patcher]
     end
 
-    subgraph Mod
+    subgraph Thrive
         ME[ModEntry]
         UI[UI Layer]
         Items[Items Layer]
@@ -172,9 +172,8 @@ graph TD
     Services --> Domain
     Items <--> Services
     UI <--> Services
-    Events --> UI
     Events --> Services
-    Events --> Items
+    Items --> CP
 
 ```
 
@@ -198,9 +197,11 @@ graph TD
 - [x] Define initialization states for defined data structures.
 - [x] Save or create crop and soil data through SMAPI
 - [x] Daily nutrient depletion and corresponding bonuses/penalties
+- [ ] Define logic for the creation of customized items that undo soil depletion.
 
 ### v0.2 – Balancing
-- [ ] Write script to analyze mechanic formulas and their results
+- [ ] Write test method that finds, creates and saves data for all in-game crops
+- [ ] Write script to analyze the modded crop data and their results
 - [ ] Adjust nutrient depletion formulas 
 - [ ] Adjust crop quality yields based on its overall health during growth.
 
@@ -270,6 +271,7 @@ graph TD
 
 ## 8. References
 - Beginner's Guide: https://stardewvalleywiki.com/Modding:Modder_Guide/Get_Started
+- Saving and retrieving data: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Data
 - API Reference: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs
 - Stardew Valley decompiled code (via ILSpy)
 - Stardew Valley Wiki: https://stardewvalleywiki.com/Stardew_Valley_Wiki
