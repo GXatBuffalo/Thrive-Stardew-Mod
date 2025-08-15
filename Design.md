@@ -1,43 +1,194 @@
-﻿# Stardew Sustainable Farming – Design Document
+﻿# Thrive: A Stardew Valley Mod – Design Document
 
 **Author:** SomebodyUnown 
-**Date:** 2025-08-12
-**Status:** In Progress
+**Last Updated:** 2025-08-14
+**Project Status:** In Progress, v0.2.0
 
 ---
 
 ## 1. Overview
 
-Project Overview
-This is a Stardew Valley mod that aims to increase complexity in the base farming mechanics, encouraging players to think beyond raw profitibility of a crop. Instead of focusing solely on profit per day, players will need to consider soil health, crop diversity, and long-term sustainability in their farming strategies.
+### Project Overview
+This project is a **Stardew Valley** mod that deepens the complexity of the base farming mechanics. It shifts player focus from raw crop profitability toward **soil health, crop diversity, and sustainable farming strategies**.  
 
-Motivation
-Whether in vanilla Stardew or a modded Stardew with tons of popular crop mods, there’s often little reason to plant anything other than the most profitable crops. This mod changes that by introducing mechanics that reward diversity and careful resource management, making less-utilized crops, flowers, and other plants (and fungi) more viable.
+Rather than only optimizing for profit-per-day, players will weigh the **long-term consequences of their farming choices**, creating a more dynamic and strategic agricultural experience.
 
-Design Philosophy
-While not a 1:1 simulation of real-world agriculture, the mod does draw inspiration from real-life parallels. In reality, you cannot endlessly extract resources from the same soil without consequences, and every crop has an environmental impact in some way. This mod aims to mirror that idea in a fun and approachable way, prompting players to think about sustainability while still enjoying the game.
+### Motivation
+Whether in vanilla Stardew Valley or in heavily-modded playthroughs with dozens of new crops, players often converge on the same handful of high-profit crops each season. This results in repetitive gameplay and underutilized plant types.  
+
+This mod changes that by rewarding:
+- **Crop diversity** — mixing crops for better soil health.  
+- **Long-term soil management** — avoiding over-exploitation of the same land.  
+- **Sustainable planning** — trading short-term gains for seasonal or multi-year advantages.
+
+The goal is to make flowers, niche crops, and underused plants (including fungi) **strategically valuable**.
+
+### Design Philosophy
+While not a 1:1 simulation of real-world agriculture, the mechanics draw inspiration from actual farming principles. In real life, repeatedly planting the same crop on the same soil leads to nutrient depletion and reduced yields — this mod embraces that idea, but keeps it approachable and fun.
+
+The philosophy is to **blend realism with game balance**:
+- Simple enough for casual players to understand.  
+- Deep enough for challenge-seekers to master.  
+- Flexible enough to work alongside popular content mods.
+
+### Scope
+- **Included:** Soil nutrient system, crop diversity bonuses, environmental impact mechanics, custom in-game tools, events via Content Patcher.  
+- **Planned:** Player and NPC nutrition system, deeper and more comprehensive sustainable farming mechanics 
+- **Excluded:** Overhauls to unrelated systems like fishing, mining, foraging, or combat.
 
 ---
 
 ## 2. Key Features
-- Track soil nutrients (tentative names: nitro, phos, pH, iridium, mana)
-- Adjust crop quality and nutritional value based on soil quality during growth
-- Each crop has randomized soil depletion (or replenishment) rates that are persistent per save. New or different saves will have new values that encourage the player to discover an entirely new array of crops to manage.
-- Compatibility with mods such as Wildflour's Atlier Goods.
-- Social events with Stardew characters (both vanilla and modded) to integrate mechanics and lore.
+
+- **Soil Health System** – Track and manage soil nutrition levels that change over time based on crop usage, fertilizer, and crop rotation.
+- **Dynamic Crop Effects** – Certain crops replenish or deplete specific soil nutrients, affecting future yields.
+- **Nutrition Mechanics** – Extend gameplay depth by introducing nutrition values for harvested crops, with planned future integration into character well-being.
+- **Sustainability Incentives** – Balance short-term profits with long-term farm health to avoid soil degradation and reduced productivity.
+- **Tool Integration** – Custom in-game tools (e.g., Soil/Crop Analyzer) for checking soil and crop data.
+- **UI Enhancements** – Additional HUD elements and menus to present soil status, crop recommendations, and nutrient breakdowns.
+- **Event Integration** – New gameplay events that introduce mechanics, encourage sustainable farming practices, and provide the player the in-game tools.
+- **Mod Compatibility** – Designed for easy integration with popular crop mods and content packs via Content Patcher and SMAPI.
 
 ---
 
 ## 3. Architecture
-### 3.1 Main Components
-### 3.2 Data Flow
+
+# Feature Roadmap to Architecture Mapping
+
+This table maps planned features from the roadmap to the architecture layers they will primarily affect. It helps maintain clarity on where changes should occur and ensures new functionality is developed in the appropriate part of the codebase.
+
+| Roadmap Version & Feature                                          | Domain Layer | Services Layer | Items Layer | UI Layer   | Events Layer | ModEntry    |
+|--------------------------------------------------------------------|--------------|----------------|-------------|------------|--------------|-------------|
+| **v0.1 – Basic Core Systems**                                      | ✅           | ✅            |             |            |              | ✅          |
+| Crop & soil data structures                                        | ✅           |                |             |            |              |             |
+| Initialization states                                              | ✅           |                |             |            |              |             |
+| Save/load data via SMAPI                                           |              | ✅             |             |            |              | ✅          |
+| Daily nutrient depletion & bonuses/penalties                       | ✅           |                |             |            |              |             |
+| Dyanamically adjust crop quality yields                            | ✅           |                |             |            |              |             |
+| **v0.2 – Balancing**                                               | ✅           |                |             |            |              |             |
+| Adjust formulas in various game mechanics                          | ✅           |                |             |            |              |             |
+| **v0.3 – Game Integration**                                        | ✅           | ✅             | ✅          |           |              | ✅          |
+| Hook into game events                                              |              | ✅             |             |            |              | ✅          |
+| Custom tool/item to measure soil/crop health                       |              | ✅             | ✅          |            |              |             |
+| Custom items to improve soil quality                               |              | ✅             | ✅          |            |              | ✅         |
+| Discourage farming on non-farm maps                                |              | ✅             |             |            |              | ✅         |
+| **v0.4 – Compatibility & Edge Cases**                              | ✅           | ✅             |             |            |              |            |
+| Context-tag-based support                                          | ✅           | ✅             |             |            |              |            |
+| Edge-case item support                                             | ✅           | ✅             |             |            |              |            |
+| **v0.5 – Player Interactions & UI**                                |              | ✅             | ✅          | ✅         |              |            |
+| HUD for soil health                                                |              | ✅             | ✅          | ✅         |              |            |
+| HUD for crop depletion/replenishment                               |              | ✅             | ✅          | ✅         |              |            |
+| Menu for known data                                                |              | ✅             |             | ✅         |              |            |
+| Menu for current map data                                          |              | ✅             |             | ✅         |              |            |
+| Integration with Better Game Menu                                  |              |                |              | ✅         |              | ✅         |
+| **v0.6 – Configurability & Code Quality**                          |              |                |              |            |              |            |
+| Additional and adjustable number of soil variables                 | ✅           | ✅             |             |             |              |            |
+| Config file support                                                |              | ✅             |              | ✅         |              | ✅         |
+| i18n support                                                       |              |                |              | ✅         |              | ✅         |
+| Tractor mod compatibility                                          |              | ✅             |              |            |              | ✅         |
+| **v0.8 – Lore Integration**                                        |              | ✅             | ✅           | ✅         | ✅          | ✅         |
+| Demetrius mail & events                                            |              |                |              |             | ✅          | ✅         |
+| Farming-related character events                                   |              |                |              |             | ✅          | ✅         |
+| ConversationTopics                                                 | ✅           | ✅             |             | ✅          | ✅          | ✅         |
+
+✅ = Primary layer where the feature is implemented
 
 
 ---
 
+## Future Architectural Considerations
+
+### 1. Domain-Driven, Service-Based Structure
+The architecture follows a **domain-driven** approach, separating core logic (Domain layer) from orchestration (Services) and UI or Event concerns.  
+Over time, as the codebase grows:
+- Keep domain classes free of SMAPI dependencies.
+- Treat `Services` as the glue that orchestrates game hooks, logic, and state updates.
+- Keep `Items` specialized for custom in-game items or tools and utilities directly interacted with by the player.
+- Leave `Events` separate from the other layers, solely interacting with ContentPatcher to provide custom events to the player.
+
+### 2. Utility/Helper Functions
+If utility or helper methods grow in number:
+- Group them into a dedicated `Utils/` folder or `Helpers.cs` file.
+- Avoid bloating domain classes with unrelated helper logic.
+
+### 3. Event-Driven Communication
+For loose coupling:
+- Keep a lightweight event system for communication between modules.
+- Keep ModEntry as the registration point, not the main logic holder.
+
+### 4. Scalability for Future Features
+If major new features are planned:
+- Create new submodules instead of overloading existing ones (e.g., a separate `Pests/` module if adding pest mechanics).
+- Ensure SaveData is versioned to allow safe upgrades without corrupting player saves.
+
+### 5. Testing Strategy
+While SMAPI mods are harder to unit-test:
+- Keep core logic testable by isolating it from SMAPI calls.
+- Where possible, abstract game dependencies behind interfaces and mock them in tests.
+- Make use of SMAPI console methods such as 'export'
+- Use SMAPI's logging system to keep track of changes over time or state in game.
+
+### 6. Documentation
+- Maintain well documented and readable code to keep it easy to understand.
+- Maintain `Design.md` documentation for developers who are interested in contributing technical expertise.
+
+
+---
+
+## Dependency Diagram
+
+```mermaid
+graph TD
+    subgraph Stardew Valley
+        BV[Base Vanilla]
+    end
+
+    subgraph Dependencies
+        SMAPI
+        CP[Content Patcher]
+    end
+
+    subgraph Mod
+        ME[ModEntry]
+        UI[UI Layer]
+        Items[Items Layer]
+        Services[Services Layer]
+        Events[Events Layer]
+        Domain[Domain Layer]
+    end
+
+    SMAPI --> BV
+
+    CP --> SMAPI
+    ME --> SMAPI
+
+    Events --> CP
+
+    ME --> Services
+    ME --> UI
+    ME --> Items
+    ME --> Events
+
+    Services --> Domain
+    Items <--> Services
+    UI <--> Services
+    Events --> UI
+    Events --> Services
+    Events --> Items
+
+```
+
+---
+
 ## 4. Game/Tech Integration
-- **Framework:** SMAPI (Stardew Valley Modding API), ContentPatcher
-- **Language:** C#
+
+- **Game:** Stardew Valley (PC/Linux/Mac, target 1.6+)
+- **Frameworks:**
+  - **SMAPI** – Primary modding API for loading custom C# logic into the game loop and data model.
+  - **Content Patcher** – Handles adding content and asset (e.g., custom events) without custom code.
+- **Language:** C# (target .NET Framework 6.0)
+- **Tooling:** Visual Studio 2022 for development and debugging.
+- **Build System:** MSBuild with SMAPI mod packaging format.
 
 ---
 
@@ -47,11 +198,11 @@ While not a 1:1 simulation of real-world agriculture, the mod does draw inspirat
 - [x] Define initialization states for defined data structures.
 - [x] Save or create crop and soil data through SMAPI
 - [x] Daily nutrient depletion and corresponding bonuses/penalties
-- [ ] Adjust crop quality yields based on its overall health during growth.
 
 ### v0.2 – Balancing
 - [ ] Write script to analyze mechanic formulas and their results
 - [ ] Adjust nutrient depletion formulas 
+- [ ] Adjust crop quality yields based on its overall health during growth.
 
 ### v0.3 - Game Integration
 - [ ] Hook mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
@@ -86,15 +237,16 @@ While not a 1:1 simulation of real-world agriculture, the mod does draw inspirat
 - [ ] Ask for code review from experienced mod authors.
 - [ ] Future-proof code based on feeback gathered.
 
-### v??? - Lore Integration
+### v0.8 - Lore Integration
 - [ ] Mail from Demetrius informing the user of basic mechanics
 - [ ] Event with Demetrius to encourage consideration of mechanics and to give player ability to analyze crop/soil stats.
-- [ ] Event with various other farmers (???)
+- [ ] Event with various other farmer characters (???)
 - [ ] ConversationTopics depending on how well player manages their farm and its crops/soil.
 
 ### v0.9 - Beta Test 2
 - [ ] Collect narrative feedback and bug reports
-- [ ] Fix issues and improve event writing for pacing, tone, and/or clarity
+- [ ] Fix reported issues and bugs
+- [ ] Improve event writing for pacing, tone, and/or clarity
 
 ### v1.0 - Release
 - [ ] Add GitHub release with changelog and installation instructions
@@ -117,6 +269,7 @@ While not a 1:1 simulation of real-world agriculture, the mod does draw inspirat
 ---
 
 ## 8. References
-- SMAPI Docs: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/SMAPI
+- Beginner's Guide: https://stardewvalleywiki.com/Modding:Modder_Guide/Get_Started
+- API Reference: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs
 - Stardew Valley decompiled code (via ILSpy)
-- Original game mechanics notes
+- Stardew Valley Wiki: https://stardewvalleywiki.com/Stardew_Valley_Wiki

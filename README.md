@@ -1,4 +1,4 @@
-## Stardew Sustainable Farming
+## Thrive: A Stardew Valley Mod 
 
 This is a Stardew Valley mod that aims to increase complexity in the base farming mechanics, encouraging players to think beyond raw profitibility of a crop. Instead of focusing solely on profit per day, players will need to consider soil health, crop diversity, and long-term sustainability in their farming strategies.
 
