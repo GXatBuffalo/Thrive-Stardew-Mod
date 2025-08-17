@@ -12,6 +12,7 @@ namespace StardewNutrition.Services
 		public int nutriMax = 1000;
 		public NutritionMap CurrentMap { get; private set; }
 		public string CurrentKey { get; private set; }
+		public Dictionary<string, CropData> KnownCropDict { get; set; } = new Dictionary<string, CropData>();
 
 		public FarmingHandler(IModHelper helper) => gameHandler = helper;
 
@@ -65,6 +66,27 @@ namespace StardewNutrition.Services
 
 				sn.SoilStats[4] -= cd.SoilDeprecation[4];
 			}
+		}
+
+		public void TestSetAllCropData()
+		{
+			var seedData = Game1.cropData;
+			Dictionary<string, List<int>> results = new();
+			foreach (KeyValuePair<string, StardewValley.GameData.Crops.CropData> kvp in seedData)
+			{
+				Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
+				results.Add(kvp.Key,
+					new List<int>{
+						produceData.Price,
+						Math.Abs(produceData.Edibility),
+						(int)(16.0 * Math.Log(0.018 * produceData.Price + 1.0, Math.E)),
+						kvp.Value.DaysInPhase[kvp.Value.DaysInPhase.Count - 1]
+					}
+				);
+				KnownCropDict[kvp.Key] = new CropData(kvp.Key);
+			}
+			gameHandler.Data.WriteSaveData("Thrive.knowcropdict", KnownCropDict);
+			gameHandler.Data.WriteSaveData("Thrive.knowcropdict_vanilla", KnownCropDict);
 		}
 	}
 }

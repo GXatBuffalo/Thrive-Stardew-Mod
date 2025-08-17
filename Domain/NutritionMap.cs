@@ -8,7 +8,7 @@ namespace StardewNutrition.Domain
 		public int ManaMax { get; set; }
 		public int MapMana { get; set; }
 		public SoilNutrition[][] MapData { get; set; }
-		public Dictionary<(int, int), int> MagicCrops { get; set; }
+		public Dictionary<(int, int), int> MagicCrops { get; set; }//<(xcord, ycord), manacost>
 
 		public NutritionMap(int sizeX, int sizeY, int initialMana)
 		{

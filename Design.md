@@ -200,7 +200,7 @@ graph TD
 - [ ] Define logic for the creation of customized items that undo soil depletion.
 
 ### v0.2 – Balancing
-- [ ] Write test method that finds, creates and saves data for all in-game crops
+- [x] Write test method that finds, creates and saves data for all in-game crops
 - [ ] Write script to analyze the modded crop data and their results
 - [ ] Adjust nutrient depletion formulas 
 - [ ] Adjust crop quality yields based on its overall health during growth.
@@ -275,7 +275,7 @@ graph TD
 | **Mod**                  | Short for *modification*. A package of custom code, assets, or data that alters or extends the base game’s behavior without modifying the original game files directly. In Stardew Valley, mods are typically loaded by SMAPI.                   |
 | **Content Patcher (CP)** | A framework mod that lets other mods change game assets and data via JSON, without direct code changes.          |
 | **Event Trigger**        | A gameplay moment (e.g., `DayStarted`, `CropHarvested`) that SMAPI exposes for mod logic to run.                 |
-| **Save Data**            | Game or mod state stored between sessions, usually as JSON or XML in Stardew modding.                            |
+| **Save Data**            | Game or mod state stored between sessions, usually as JSON in Stardew modding.                            |
 | **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, items). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
 | **i18n**                 | A format mods use to provide ease of translations.                                                               | 
 
