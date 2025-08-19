@@ -82,15 +82,19 @@ namespace StardewNutrition.Services
 			  
 				Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
 				this.Monitor.Log((string)kvp.Value.HarvestItemId, LogLevel.Trace);
-				results.Add(kvp.Key,
-					new List<int>{
+				try
+				{
+					results.Add(kvp.Key,
+						new List<int>{
 						produceData.Price,
 						Math.Abs(produceData.Edibility),
 						(int)(16.0 * Math.Log(0.018 * produceData.Price + 1.0, Math.E)),
 						kvp.Value.DaysInPhase[kvp.Value.DaysInPhase.Count - 1]
-					}
-				);
-				KnownCropDict[kvp.Key] = new CropData(kvp.Key);
+						}
+					);
+					KnownCropDict[kvp.Key] = new CropData(kvp.Key);
+				}
+				catch { };
 			}
 			gameHandler.Data.WriteSaveData("Thrive.knowcropdict", KnownCropDict);
 			gameHandler.Data.WriteSaveData("Thrive.knowcropdict_vanilla", KnownCropDict);
