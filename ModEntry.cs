@@ -2,7 +2,7 @@
 using StardewModdingAPI.Events;
 using StardewNutrition.Services;
 
-namespace Stardew_Nutrition
+namespace Thrive
 {
 	internal sealed class ModEntry : Mod
 	{
@@ -12,7 +12,7 @@ namespace Stardew_Nutrition
 		{
 			if (fHandler == null) // initialize once
 			{
-				fHandler = new FarmingHandler(this.Helper);
+				fHandler = new FarmingHandler(this.Helper, this.Monitor);
 				fHandler.TestSetAllCropData();
 				this.Monitor.Log("FarmingHandler initialized.", LogLevel.Info);
 			}

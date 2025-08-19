@@ -26,7 +26,7 @@ namespace StardewNutrition.Domain
 			float xp = (float)(16.0 * Math.Log(0.018 * price + 1.0, Math.E));  //default stardew xp formula
 			int growthphase = seedData.DaysInPhase[seedData.DaysInPhase.Count - 1];
 
-			int crop_factor = (int)(price * (edibility * 3.625) * xp / growthphase / 100 - 3 + (rand.NextDouble() * 3 - 2));
+			int crop_factor = (int)(price * (edibility * 3.625) * xp / growthphase / 100 + (rand.NextDouble() * 3 - 2));
 
 			SoilDeprecation = new List<int>
 						{

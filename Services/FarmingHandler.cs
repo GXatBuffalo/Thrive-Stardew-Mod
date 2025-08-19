@@ -7,14 +7,19 @@ namespace StardewNutrition.Services
 {
 	public class FarmingHandler
 	{
+		public IMonitor Monitor { get; }
 		public IModHelper gameHandler { get; }
 		public int nutriMin = 0;
 		public int nutriMax = 1000;
-		public NutritionMap CurrentMap { get; private set; }
-		public string CurrentKey { get; private set; }
+		public NutritionMap CurrentMap { get; private set; } = new NutritionMap(0, 0, 0);
+		public string? CurrentKey { get; private set; } 
 		public Dictionary<string, CropData> KnownCropDict { get; set; } = new Dictionary<string, CropData>();
 
-		public FarmingHandler(IModHelper helper) => gameHandler = helper;
+		public FarmingHandler(IModHelper helper, IMonitor monitor)
+		{
+			Monitor = monitor;
+			gameHandler = helper;
+		}
 
 		private int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max);
 
@@ -74,7 +79,9 @@ namespace StardewNutrition.Services
 			Dictionary<string, List<int>> results = new();
 			foreach (KeyValuePair<string, StardewValley.GameData.Crops.CropData> kvp in seedData)
 			{
+			  
 				Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
+				this.Monitor.Log((string)kvp.Value.HarvestItemId, LogLevel.Trace);
 				results.Add(kvp.Key,
 					new List<int>{
 						produceData.Price,
