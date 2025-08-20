@@ -1,7 +1,7 @@
 ﻿# Thrive: A Stardew Valley Mod – Design Document
 
 **Author:** SomebodyUnown 
-**Last Updated:** 2025-08-14
+**Last Updated:** 2025-08-20
 **Project Status:** In Progress, v0.2.0
 
 ---
@@ -40,22 +40,21 @@ The philosophy is to **blend realism with game balance**:
 
 ## 2. Key Features
 
-- **Soil Health System** – Track and manage soil nutrition levels that change over time based on crop usage, fertilizer, and crop rotation.
-- **Dynamic Crop Effects** – Certain crops replenish or deplete specific soil nutrients, affecting future yields.
+- **Soil Health System** – Track and manage soil nutrition levels that change over time based on crops planted and fertilizers used.
+- **Dynamic Crop Effects** – Different crops replenish or deplete soil nutrients in differing quantities, affecting future yields.
 - **Nutrition Mechanics** – Extend gameplay depth by introducing nutrition values for harvested crops, with planned future integration into character well-being.
 - **Sustainability Incentives** – Balance short-term profits with long-term farm health to avoid soil degradation and reduced productivity.
 - **Tool Integration** – Custom in-game tools (e.g., Soil/Crop Analyzer) for checking soil and crop data.
-- **UI Enhancements** – Additional HUD elements and menus to present soil status, crop recommendations, and nutrient breakdowns.
-- **Event Integration** – In-game events that introduce mod mechanics, encourage sustainable farming practices, and provide the player the in-game tools.
-- **Mod Compatibility** – Designed for easy integration with popular crop mods and content packs via Content Patcher and SMAPI.
+- **Event Integration** – In-game events that introduce mod mechanics, encourage sustainable farming practices, and provide the player with the in-game tools.
+- **Dynamic Difficulty** - Allows configuration of number of nutrients to manage. 
+- **Mod Compatibility** – Designed for integration with popular Content Patcher and C# mods that change or add to farming mechanics.
+- **Efficient Performance** - Designed in a way that maximizes complexity of gameplay while being light on the computer.
 
 ---
 
 ## 3. Architecture
 
 **Feature Roadmap to Architecture Mapping**
-
-This table maps planned features from the roadmap to the architecture layers they will primarily affect. It helps maintain clarity on where changes should occur and ensures new functionality is developed in the appropriate part of the codebase.
 
 | Roadmap Version & Feature                                          | Domain Layer | Services Layer | Items Layer | UI Layer   | Events Layer | ModEntry    |
 |--------------------------------------------------------------------|--------------|----------------|-------------|------------|--------------|-------------|
@@ -101,7 +100,7 @@ This table maps planned features from the roadmap to the architecture layers the
 ### 1. Domain-Driven, Service-Based Structure
 The architecture follows a **domain-driven** approach, separating core logic (Domain layer) from orchestration (Services) and UI or Event concerns.  
 Over time, as the codebase grows:
-- Keep domain classes free of SMAPI dependencies.
+- Keep `Domain` classes free of SMAPI dependencies.
 - Treat `Services` as the glue that orchestrates game hooks, logic, and state updates.
 - Keep `Items` specialized for custom in-game items or tools and utilities directly interacted with by the player.
 - Leave `Events` separate from the other layers, solely interacting with ContentPatcher to provide custom events to the player.
@@ -192,31 +191,31 @@ graph TD
 ---
 
 ## 5. Planned Roadmap
-### v0.1 – Basic Core Systems
+### v0.1 – Foundations
 - [x] Design and create multiple data structures to hold crop and soil data.
 - [x] Define initialization states for defined data structures.
+- [x] Define daily nutrient depletion depending on existing properties of in-game objects
+- [x] Add compatibility with crops utilizing context tags that mention 'magic'
 - [x] Save or create crop and soil data through SMAPI
-- [x] Daily nutrient depletion and corresponding bonuses/penalties
-- [ ] Define logic for the creation of customized items that undo soil depletion.
+- [x] Add SMAPI console logging to check for bugs and game state changes
 
 ### v0.2 – Balancing
 - [x] Write test method that finds, creates and saves data for all in-game crops
-- [ ] Write script to analyze the modded crop data and their results
-- [ ] Adjust nutrient depletion formulas 
-- [ ] Adjust crop quality yields based on its overall health during growth.
+- [x] Write script to analyze the modded crop data and their results
+- [ ] Adjust formulas for initializing base crop properties and their soil depletion rates
 
-### v0.3 - Game Integration
-- [ ] Hook mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
-- [ ] Add SMAPI console logging to check for bugs and game state changes
+### v0.3 - Advanced Growth Mechanics
+- [ ] Adjust crop quality yields based on its overall health during growth.
+- [ ] Define logic for the creation of customized items that undo soil depletion.
 - [ ] Custom tool/item to measure soil and crop health.
 - [ ] Custom items to improve soil quality
-- [ ] Discourage farming in non-farm maps both to improve mod performance and for lore purposes
+- [ ] Completely hook finished mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
 
 ### v0.4 - Basic Compatibility and Edge Cases
-- [ ] Add compatibility with crops labled as magic
+- [ ] Introduce additional mechanics based on context tags of a crop or seed.
 - [ ] Check for and add logic to include "crop-like", growable items that are coded differently.
-- [ ] Adjust depletion and bonuses based on 'mana'
-- [ ] (Possible) Introduce additional mechanics based on context tags of a crop or seed.
+- [ ] Discourage farming in non-farm maps both to improve mod performance and for lore purposes.
+- [ ] Tractor mod compatiblity
 
 ### v0.5 - Player Interactions and User Interfaces
 - [ ] HUD elements for viewing soil health for custom tool/item
@@ -229,14 +228,16 @@ graph TD
 - [ ] Update code allowing for adjustment of soil variables.
 - [ ] Configuration file to adjust mechanics
 - [ ] i18n support.
-- [ ] Refactor code for readibility and add comments to explain code.
-- [ ] Tractor mod compatiblity
+- [ ] Add comprehensive comments to explain code.
+- [ ] Ask for code review from experienced mod authors.
+- [ ] Refactor or reorganize code based on feedback.
 
-### v0.7 - Beta Test
+### v0.7 - Beta Test 1
 - [ ] Recruit testers from modding community to gather performance metrics and bug reports.
 - [ ] Collect professional feedback from experienced mod authors and players.
-- [ ] Ask for code review from experienced mod authors.
-- [ ] Future-proof code based on feeback gathered.
+- [ ] Fix bugs found and reported.
+- [ ] Add additional compatibility for common conflicting mods.
+- [ ] Change, add, or edit mechanics based on feedback gathered.
 
 ### v0.8 - Lore Integration
 - [ ] Mail from Demetrius informing the user of basic mechanics
@@ -273,8 +274,8 @@ graph TD
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **SMAPI**                | *Stardew Modding API*, the main modding framework for Stardew Valley, providing hooks into game events and code. |
 | **Mod**                  | Short for *modification*. A package of custom code, assets, or data that alters or extends the base game’s behavior without modifying the original game files directly. In Stardew Valley, mods are typically loaded by SMAPI.                   |
-| **Content Patcher (CP)** | A framework mod that lets other mods change game assets and data via JSON, without direct code changes.          |
-| **Event Trigger**        | A gameplay moment (e.g., `DayStarted`, `CropHarvested`) that SMAPI exposes for mod logic to run.                 |
+| **Content Patcher (CP)** | A modding framework that lets other mods change or add assets and data to the game via JSON instead of C#.          |
+| **Event Trigger**        | A state or moment in game (e.g., `DayStarted`, `CropHarvested`) that SMAPI exposes for mod logic to run.                 |
 | **Save Data**            | Game or mod state stored between sessions, usually as JSON in Stardew modding.                            |
 | **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, items). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
 | **i18n**                 | A format mods use to provide ease of translations.                                                               | 
