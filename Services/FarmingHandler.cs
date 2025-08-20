@@ -1,9 +1,9 @@
 ﻿using System;
 using StardewModdingAPI;
 using StardewValley;
-using StardewNutrition.Domain;
+using Thrive.Domain;
 
-namespace StardewNutrition.Services
+namespace Thrive.Services
 {
 	public class FarmingHandler
 	{

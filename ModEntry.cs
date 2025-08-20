@@ -1,6 +1,6 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewNutrition.Services;
+using Thrive.Services;
 
 namespace Thrive
 {
