@@ -77,6 +77,7 @@ namespace StardewNutrition.Services
 		{
 			var seedData = Game1.cropData;
 			Dictionary<string, List<int>> results = new();
+			Random rand = new Random();
 			foreach (KeyValuePair<string, StardewValley.GameData.Crops.CropData> kvp in seedData)
 			{
 			  
@@ -87,7 +88,7 @@ namespace StardewNutrition.Services
 					results.Add(kvp.Key,
 						new List<int>{
 						produceData.Price,
-						Math.Abs(produceData.Edibility),
+						Math.Abs(produceData.Edibility) == 300 ? rand.Next(0,300) : Math.Abs(produceData.Edibility),
 						(int)(16.0 * Math.Log(0.018 * produceData.Price + 1.0, Math.E)),
 						kvp.Value.DaysInPhase[kvp.Value.DaysInPhase.Count - 1]
 						}
@@ -97,7 +98,9 @@ namespace StardewNutrition.Services
 				catch { };
 			}
 			gameHandler.Data.WriteSaveData("Thrive.knowcropdict", KnownCropDict);
-			gameHandler.Data.WriteSaveData("Thrive.knowcropdict_vanilla", KnownCropDict);
+			gameHandler.Data.WriteSaveData("Thrive.knowcropdict_vanilla", results);
+			gameHandler.Data.WriteJsonFile("exported-data.json", KnownCropDict);
+			gameHandler.Data.WriteJsonFile("exported-data-v.json", results);
 		}
 	}
 }
