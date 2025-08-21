@@ -203,19 +203,21 @@ graph TD
 - [x] Write test method that finds, creates and saves data for all in-game crops
 - [x] Write script to analyze the modded crop data and their results
 - [ ] Adjust formulas for initializing base crop properties and their soil depletion rates
+- [ ] Implement multiple formulas that would be chosen at the start of a game save
 
 ### v0.3 - Advanced Growth Mechanics
 - [ ] Adjust crop quality yields based on its overall health during growth.
 - [ ] Define logic for the creation of customized items that undo soil depletion.
 - [ ] Custom tool/item to measure soil and crop health.
-- [ ] Custom items to improve soil quality
 - [ ] Completely hook finished mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
 
 ### v0.4 - Basic Compatibility and Edge Cases
 - [ ] Introduce additional mechanics based on context tags of a crop or seed.
+- [ ] Giant crop compatibility
 - [ ] Check for and add logic to include "crop-like", growable items that are coded differently.
 - [ ] Discourage farming in non-farm maps both to improve mod performance and for lore purposes.
 - [ ] Tractor mod compatiblity
+- [ ] Walk of Life and Vanilla Plus Professions compatibility
 
 ### v0.5 - Player Interactions and User Interfaces
 - [ ] HUD elements for viewing soil health for custom tool/item
@@ -265,7 +267,45 @@ graph TD
 
 ---
 
-## 6. Trade-offs & Decisions
+## 6. Design Decisions and Trade-offs
+
+### Formula-based balancing instead of per-crop tuning
+
+- Rather than manually assigning nutrient values to thousands of crops, the system derives values from existing crop properties using mathematical formulas.
+
+- *Trade-off*: This sacrifices fine-grained control over individual crop balance but ensures scalability and consistency.
+
+### Randomized but consistent formulas per save
+
+- At the start of a save, multiple candidate formulas are available. A small subset is randomly chosen and applied consistently throughout that save.
+
+- *Trade-off*: This prevents players from becoming too accustomed to a fixed soil mechanic system, increasing replay variety. However, it introduces unpredictability or difficulty for players who want deterministic behavior.
+
+### Mana stored at map level, not soil level
+
+- Mana is implemented as a map-wide property rather than a per-tile soil property.
+
+- *Trade-off*: This sacrifices granularity in how mana might interact with individual soil tiles, but reduces data overhead (since soil data exists for every hoe-able tile).
+
+### Lazy initialization of soil and crop data
+
+- Data is only created when necessary (e.g., when a tile is first hoed, a crop is first planted/harvested, or a new crop type is introduced).
+
+- *Trade-off*: This minimizes memory and save file size, but introduces additional logic paths for “first use” events and potential edge cases.
+
+### Excluding artisan machine balance from scope
+
+- Interactions with artisan machines (e.g., kegs, preserves jars) are intentionally excluded from the current balancing system.
+
+- *Trade-off*: This may result in temporary imbalance relative to machine-based profits until a future phase but narrows the scope to soil and crop mechanics.
+
+### Python for data analysis instead of C#
+
+- Data is exported from smapi and analyzed using python libraries numpy and matplotlib
+
+- *Trade-off*: Python provides rapid prototyping, easier statistical analysis, and better tooling for balancing compared to C#. However, this requires additional functionality for accumulating data and exporting it outside the game.
+
+---
 
 
 ## 7. Glossary
