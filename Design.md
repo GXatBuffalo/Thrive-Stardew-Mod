@@ -56,24 +56,24 @@ The philosophy is to **blend realism with game balance**:
 
 **Feature Roadmap to Architecture Mapping**
 
-| Roadmap Version & Feature                                          | Domain Layer | Services Layer | Items Layer | UI Layer   | Events Layer | ModEntry    |
+| Roadmap Version & Feature                                          | Domain Layer | Services Layer | objects Layer | UI Layer   | Events Layer | ModEntry    |
 |--------------------------------------------------------------------|--------------|----------------|-------------|------------|--------------|-------------|
 | **v0.1 – Basic Core Systems**                                      | ✅           | ✅             |             |            |              | ✅         |
 | Crop & soil data structures                                        | ✅           |                |             |            |              |             |
 | Initialization states                                              | ✅           |                |             |            |              |             |
 | Save/load data via SMAPI                                           |              | ✅             |             |            |              | ✅          |
 | Daily nutrient depletion & bonuses/penalties                       | ✅           |                |             |            |              |             |
-| Dyanamically adjust crop quality yields                            | ✅           |                |             |            |              |             |
+| Dynamically adjust crop quality yields                            | ✅           |                |             |            |              |             |
 | **v0.2 – Balancing**                                               | ✅           |                |             |            |              |             |
 | Adjust formulas in various game mechanics                          | ✅           |                |             |            |              |             |
 | **v0.3 – Game Integration**                                        | ✅           | ✅             | ✅          |           |              | ✅          |
 | Hook into game events                                              |              | ✅             |             |            |              | ✅          |
-| Custom tool/item to measure soil/crop health                       |              | ✅             | ✅          |            |              |             |
-| Custom items to improve soil quality                               |              | ✅             | ✅          |            |              | ✅          |
+| Custom tool/object to measure soil/crop health                       |              | ✅             | ✅          |            |              |             |
+| Custom objects to improve soil quality                               |              | ✅             | ✅          |            |              | ✅          |
 | Discourage farming on non-farm maps                                |              | ✅             |             |            |              | ✅          |
 | **v0.4 – Compatibility & Edge Cases**                              | ✅           | ✅             |             |            |              |             |
 | Context-tag-based support                                          | ✅           | ✅             |             |            |              |             |
-| Edge-case item support                                             | ✅           | ✅             |             |            |              |             |
+| Edge-case object support                                             | ✅           | ✅             |             |            |              |             |
 | **v0.5 – Player Interactions & UI**                                |              | ✅             | ✅          | ✅         |              |             |
 | HUD for soil health                                                |              | ✅             | ✅          | ✅         |              |             |
 | HUD for crop depletion/replenishment                               |              | ✅             | ✅          | ✅         |              |             |
@@ -102,7 +102,7 @@ The architecture follows a **domain-driven** approach, separating core logic (Do
 Over time, as the codebase grows:
 - Keep `Domain` classes free of SMAPI dependencies.
 - Treat `Services` as the glue that orchestrates game hooks, logic, and state updates.
-- Keep `Items` specialized for custom in-game items or tools and utilities directly interacted with by the player.
+- Keep `Objects` specialized for custom in-game objects or tools and utilities directly interacted with by the player.
 - Leave `Events` separate from the other layers, solely interacting with ContentPatcher to provide custom events to the player.
 
 ### 2. Utility/Helper Functions
@@ -150,7 +150,7 @@ graph TD
     subgraph Thrive
         ME[ModEntry]
         UI[UI Layer]
-        Items[Items Layer]
+        objects[objects Layer]
         Services[Services Layer]
         Events[Events Layer]
         Domain[Domain Layer]
@@ -165,14 +165,14 @@ graph TD
 
     ME --> Services
     ME --> UI
-    ME --> Items
+    ME --> objects
     ME --> Events
 
     Services --> Domain
-    Items <--> Services
+    objects <--> Services
     UI <--> Services
     Events --> Services
-    Items --> CP
+    objects --> CP
 
 ```
 
@@ -204,50 +204,47 @@ graph TD
 - [x] Write script to analyze the modded crop data and their results
 - [ ] Adjust formulas for initializing base crop properties and their soil depletion rates
 - [ ] Implement multiple formulas that would be chosen at the start of a game save
+- [ ] Update code allowing for adjustment of soil variables.
+- [ ] Configuration file to adjust mechanics
 
 ### v0.3 - Advanced Growth Mechanics
 - [ ] Adjust crop quality yields based on its overall health during growth.
-- [ ] Define logic for the creation of customized items that undo soil depletion.
-- [ ] Custom tool/item to measure soil and crop health.
+- [ ] Define logic for the creation of customized objects that undo soil depletion.
+- [ ] Custom tool/object to measure soil and crop health.
+- [ ] i18n support.
 - [ ] Completely hook finished mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
 
 ### v0.4 - Basic Compatibility and Edge Cases
 - [ ] Introduce additional mechanics based on context tags of a crop or seed.
 - [ ] Giant crop compatibility
-- [ ] Check for and add logic to include "crop-like", growable items that are coded differently.
+- [ ] Check for and add logic to include "crop-like", growable objects that are coded differently.
 - [ ] Discourage farming in non-farm maps both to improve mod performance and for lore purposes.
-- [ ] Tractor mod compatiblity
+- [ ] Tractor mod compatibility
 - [ ] Walk of Life and Vanilla Plus Professions compatibility
 
 ### v0.5 - Player Interactions and User Interfaces
-- [ ] HUD elements for viewing soil health for custom tool/item
-- [ ] HUD elements for viewing crop depletion or replenishment rates for custom tool/item
+- [ ] HUD elements for viewing soil health for custom tool/object
+- [ ] HUD elements for viewing crop depletion or replenishment rates for custom tool or 
 - [ ] Menu to look at all known data
 - [ ] Menu to look at rough known data of current map.
 - [ ] Integration with mod 'Better Game Menu'
 
-### v0.6 - Code Quality & Configurability
-- [ ] Update code allowing for adjustment of soil variables.
-- [ ] Configuration file to adjust mechanics
-- [ ] i18n support.
-- [ ] Add comprehensive comments to explain code.
-- [ ] Ask for code review from experienced mod authors.
-- [ ] Refactor or reorganize code based on feedback.
-
-### v0.7 - Beta Test 1
+### v0.6 - Beta Test 1
 - [ ] Recruit testers from modding community to gather performance metrics and bug reports.
 - [ ] Collect professional feedback from experienced mod authors and players.
-- [ ] Fix bugs found and reported.
+- [ ] Code review from experienced mod authors
+- [ ] Fix bugs found and reported errors.
+- [ ] Refactor based on code review
 - [ ] Add additional compatibility for common conflicting mods.
 - [ ] Change, add, or edit mechanics based on feedback gathered.
 
-### v0.8 - Lore Integration
+### v0.7 - Lore Integration
 - [ ] Mail from Demetrius informing the user of basic mechanics
 - [ ] Event with Demetrius to encourage consideration of mechanics and to give player ability to analyze crop/soil stats.
-- [ ] Event with various other farmer characters (???)
+- [ ] Event with various other NPCs (???)
 - [ ] ConversationTopics depending on how well player manages their farm and its crops/soil.
 
-### v0.9 - Beta Test 2
+### v0.8 - Beta Test 2
 - [ ] Collect narrative feedback and bug reports
 - [ ] Fix reported issues and bugs
 - [ ] Improve event writing for pacing, tone, and/or clarity
@@ -301,7 +298,7 @@ graph TD
 
 ### Python for data analysis instead of C#
 
-- Data is exported from smapi and analyzed using python libraries numpy and matplotlib
+- Data is exported from SMAPI and analyzed using python libraries numpy and matplotlib
 
 - *Trade-off*: Python provides rapid prototyping, easier statistical analysis, and better tooling for balancing compared to C#. However, this requires additional functionality for accumulating data and exporting it outside the game.
 
@@ -317,7 +314,7 @@ graph TD
 | **Content Patcher (CP)** | A modding framework that lets other mods change or add assets and data to the game via JSON instead of C#.          |
 | **Event Trigger**        | A state or moment in game (e.g., `DayStarted`, `CropHarvested`) that SMAPI exposes for mod logic to run.                 |
 | **Save Data**            | Game or mod state stored between sessions, usually as JSON in Stardew modding.                            |
-| **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, items). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
+| **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, objects). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
 | **i18n**                 | A format mods use to provide ease of translations.                                                               | 
 
 
