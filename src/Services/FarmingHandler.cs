@@ -1,9 +1,9 @@
 ﻿using System;
 using StardewModdingAPI;
 using StardewValley;
-using Thrive.Domain;
+using Thrive.src.Domain;
 
-namespace Thrive.Services
+namespace Thrive.src.Services
 {
 	public class FarmingHandler
 	{
@@ -82,7 +82,7 @@ namespace Thrive.Services
 			{
 			  
 				Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
-				this.Monitor.Log((string)kvp.Value.HarvestItemId, LogLevel.Trace);
+				Monitor.Log(kvp.Value.HarvestItemId, LogLevel.Trace);
 				try
 				{
 					results.Add(kvp.Key,

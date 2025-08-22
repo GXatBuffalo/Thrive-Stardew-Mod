@@ -1,8 +1,8 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using Thrive.Services;
+using Thrive.src.Services;
 
-namespace Thrive
+namespace Thrive.src
 {
 	internal sealed class ModEntry : Mod
 	{
@@ -12,16 +12,16 @@ namespace Thrive
 		{
 			if (fHandler == null) // initialize once
 			{
-				fHandler = new FarmingHandler(this.Helper, this.Monitor);
+				fHandler = new FarmingHandler(Helper, Monitor);
 				fHandler.TestSetAllCropData();
-				this.Monitor.Log("FarmingHandler initialized.", LogLevel.Info);
+				Monitor.Log("FarmingHandler initialized.", LogLevel.Info);
 			}
 		}
 
 		public override void Entry(IModHelper helper)
 		{
 
-			helper.Events.GameLoop.DayStarted += this.OnDayStarted;
+			helper.Events.GameLoop.DayStarted += OnDayStarted;
 		}
 
 	}

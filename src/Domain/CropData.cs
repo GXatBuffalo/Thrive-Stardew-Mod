@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Thrive.Domain
+namespace Thrive.src.Domain
 {
 	public class CropData
 	{

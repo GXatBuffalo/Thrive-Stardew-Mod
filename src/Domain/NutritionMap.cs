@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Thrive.Domain
+namespace Thrive.src.Domain
 {
 	public class NutritionMap
 	{
@@ -17,7 +17,7 @@ namespace Thrive.Domain
 			for (int i = 0; i < sizeX; i++)
 				MapData[i] = new SoilNutrition[sizeY];
 
-			MagicCrops = new Dictionary<(int, int), int>();
+			MagicCrops = new Dictionary<(int, int), int>();  
 		}
 
 		public void AddMagicCrop(int x, int y, int manaCost) => MagicCrops[(x, y)] = manaCost;

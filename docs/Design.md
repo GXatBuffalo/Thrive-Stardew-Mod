@@ -99,11 +99,19 @@ The philosophy is to **blend realism with game balance**:
 
 ### 1. Domain-Driven, Service-Based Structure
 The architecture follows a **domain-driven** approach, separating core logic (Domain layer) from orchestration (Services) and UI or Event concerns.  
-Over time, as the codebase grows:
-- Keep `Domain` classes free of SMAPI dependencies.
-- Treat `Services` as the glue that orchestrates game hooks, logic, and state updates.
-- Keep `Objects` specialized for custom in-game objects or tools and utilities directly interacted with by the player.
-- Leave `Events` separate from the other layers, solely interacting with ContentPatcher to provide custom events to the player.
+Project Structure:
+  src/
+    Domain/
+    Services/
+    Objects/
+    Tools/
+    UI/
+    Events/
+    ModEntry.cs
+  assets/
+  docs/
+  tests/
+
 
 ### 2. Utility/Helper Functions
 If utility or helper methods grow in number:
@@ -130,7 +138,6 @@ While SMAPI mods are harder to unit-test:
 ### 6. Documentation
 - Maintain well documented and readable code to keep it easy to understand.
 - Maintain `Design.md` documentation for developers who are interested in contributing technical expertise.
-
 
 ---
 
@@ -219,6 +226,7 @@ graph TD
 - [ ] Giant crop compatibility
 - [ ] Check for and add logic to include "crop-like", growable objects that are coded differently.
 - [ ] Discourage farming in non-farm maps both to improve mod performance and for lore purposes.
+- [ ] Add save-versioning for Thrive's moddata
 - [ ] Tractor mod compatibility
 - [ ] Walk of Life and Vanilla Plus Professions compatibility
 
@@ -316,6 +324,7 @@ graph TD
 | **Save Data**            | Game or mod state stored between sessions, usually as JSON in Stardew modding.                            |
 | **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, objects). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
 | **i18n**                 | A format mods use to provide ease of translations.                                                               | 
+|**moddata**               | Custom data made and used by a mod. Can be saved or loaded through SMAPI |
 
 
 ---

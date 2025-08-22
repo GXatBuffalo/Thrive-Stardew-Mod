@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Thrive.Domain
+namespace Thrive.src.Domain
 {
 	public class SoilNutrition
 	{
