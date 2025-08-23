@@ -80,7 +80,6 @@ namespace Thrive.src.Services
 			Random rand = new Random();
 			foreach (KeyValuePair<string, StardewValley.GameData.Crops.CropData> kvp in seedData)
 			{
-			  
 				Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
 				Monitor.Log(kvp.Value.HarvestItemId, LogLevel.Trace);
 				try
@@ -88,9 +87,10 @@ namespace Thrive.src.Services
 					results.Add(kvp.Key,
 						new List<int>{
 						produceData.Price,
-						Math.Abs(produceData.Edibility) == 300 ? rand.Next(0,300) : Math.Abs(produceData.Edibility),
+						produceData.Edibility is -300 or 0 ? rand.Next(1,300) : Math.Abs(produceData.Edibility),
 						(int)(16.0 * Math.Log(0.018 * produceData.Price + 1.0, Math.E)),
-						kvp.Value.DaysInPhase[kvp.Value.DaysInPhase.Count - 1]
+						kvp.Value.DaysInPhase.Sum(),
+						produceData.Category
 						}
 					);
 					KnownCropDict[kvp.Key] = new CropData(kvp.Key);

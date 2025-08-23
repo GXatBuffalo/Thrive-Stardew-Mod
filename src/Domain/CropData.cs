@@ -24,25 +24,25 @@ namespace Thrive.src.Domain
 			Game1.objectData.TryGetValue(seedData.HarvestItemId, out var produceData);
 			//reminder - crop attributes: growth time, XP, Energy, Health, Base Price, category, seasons, multiharvest
 			int price = produceData.Price;
-			int edibility = Math.Abs(produceData.Edibility);
+			int edibility = produceData.Edibility is 300 or 0 ? rand.Next(1, 300) : Math.Abs(produceData.Edibility);
 			float xp = (float)(16.0 * Math.Log(0.018 * price + 1.0, Math.E));  //default stardew xp formula
 			int growthphase = seedData.DaysInPhase.Sum();
 
-			int crop_factor = (int)(Math.Sqrt(price * (edibility * 3.625) * xp * 3) / growthphase);
+			double crop_factor = (Math.Sqrt(price * (edibility * 3.625) * xp * 3) / growthphase);
 			isMagic = produceData.ContextTags.Any(s => s.Contains("magic", StringComparison.OrdinalIgnoreCase));
 
 			SoilDeprecation = new List<double>
 						{
 								crop_factor,
-								Math.Sqrt(200/crop_factor) - 3.0,
-								rand.Next(0, crop_factor) - 0,
+								(Math.Sqrt(200/crop_factor) - 3.0)*1.2,
+								rand.NextDouble()*2 - 1,
 								1,
 								isMagic ? 1 : 0
 						};
 
 			Requirements = new List<double>
 						{
-								Math.Sqrt(200/crop_factor), SoilDeprecation[0],
+								Math.Sqrt(200/crop_factor)*16, SoilDeprecation[0],
 								(xp*edibility+rand.NextDouble()*20-10)%100, SoilDeprecation[1],
 								rand.Next(0, 100), SoilDeprecation[0] + SoilDeprecation[1] + SoilDeprecation[2],
 								1, 0, 
