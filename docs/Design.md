@@ -157,7 +157,7 @@ graph TD
     subgraph Thrive
         ME[ModEntry]
         UI[UI Layer]
-        objects[objects Layer]
+        Objects[Objects Layer]
         Services[Services Layer]
         Events[Events Layer]
         Domain[Domain Layer]
@@ -176,10 +176,10 @@ graph TD
     ME --> Events
 
     Services --> Domain
-    objects <--> Services
+    Objects <--> Services
     UI <--> Services
     Events --> Services
-    objects --> CP
+    Objects --> CP
 
 ```
 
@@ -206,20 +206,20 @@ graph TD
 - [x] Save or create crop and soil data through SMAPI
 - [x] Add SMAPI console logging to check for bugs and game state changes
 
-### v0.2 – Balancing
+### v0.2 - More Growth Mechanics
+- [ ] Logic to adjust crop quality yields based on its overall health during growth.
+- [ ] Define logic for the creation of customized objects that undo soil depletion.
+- [ ] Custom player tool to measure soil and crop health.
+- [ ] i18n support.
+- [ ] Completely hook finished mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
+
+### v0.3 – Balancing
 - [x] Write test method that finds, creates and saves data for all in-game crops
 - [x] Write script to analyze the modded crop data and their results
 - [ ] Adjust formulas for initializing base crop properties and their soil depletion rates
 - [ ] Implement multiple formulas that would be chosen at the start of a game save
 - [ ] Update code allowing for adjustment of soil variables.
 - [ ] Configuration file to adjust mechanics
-
-### v0.3 - Advanced Growth Mechanics
-- [ ] Adjust crop quality yields based on its overall health during growth.
-- [ ] Define logic for the creation of customized objects that undo soil depletion.
-- [ ] Custom tool/object to measure soil and crop health.
-- [ ] i18n support.
-- [ ] Completely hook finished mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
 
 ### v0.4 - Basic Compatibility and Edge Cases
 - [ ] Introduce additional mechanics based on context tags of a crop or seed.
