@@ -6,23 +6,123 @@ namespace Thrive.src
 {
 	internal sealed class ModEntry : Mod
 	{
-		public FarmingHandler fHandler { get; set; }
-
+		public FarmingHandler F_Handler { get; set; }
+		private ModConfig Config;
+		
 		private void OnDayStarted(object? sender, DayStartedEventArgs e)
 		{
-			if (fHandler == null) // initialize once
+			if (F_Handler == null) // initialize once
 			{
-				fHandler = new FarmingHandler(Helper, Monitor);
-				fHandler.TestSetAllCropData();
+				F_Handler = new FarmingHandler(Helper, Monitor);
+				F_Handler.TestSetAllCropData();
 				Monitor.Log("FarmingHandler initialized.", LogLevel.Info);
 			}
 		}
 
 		public override void Entry(IModHelper helper)
 		{
-
+			this.Config = this.Helper.ReadConfig<ModConfig>();
+			helper.Events.GameLoop.GameLaunched += OnGameLaunched;
 			helper.Events.GameLoop.DayStarted += OnDayStarted;
+
 		}
 
+		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+		{
+			SetConfigMenu(sender, e);
+		}
+
+		private void SetConfigMenu(object? sender, GameLaunchedEventArgs e) {
+			// get Generic Mod Config Menu's API (if it's installed)
+			var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+			if (configMenu is null)
+				return;
+
+			// register mod
+			configMenu.Register(
+					mod: this.ModManifest,
+					reset: () => this.Config = new ModConfig(),
+					save: () => this.Helper.WriteConfig(this.Config)
+			);
+
+			// add some config options
+			configMenu.AddNumberOption(
+					mod: this.ModManifest,
+					getValue: () => (float)this.Config.FruitsCategoryMultiplier,
+					setValue: value => this.Config.FruitsCategoryMultiplier = value,
+					name: () => "Fruit Category Multiplier",
+					tooltip: () => "A multiplier for how much fruits deplete or replenish soil.",
+					min: 0.1f,
+					max: 3.0f,
+					interval: 0.05f
+			);
+
+			configMenu.AddNumberOption(
+					mod: this.ModManifest,
+					getValue: () => (float)this.Config.VegetableCategoryMultiplier,
+					setValue: value => this.Config.VegetableCategoryMultiplier = value,
+					name: () => "Vegetable Category Multiplier",
+					tooltip: () => "A multiplier for how much veggies deplete or replenish soil.",
+					min: 0.1f,
+					max: 3.0f,
+					interval: 0.05f
+			);
+
+			configMenu.AddNumberOption(
+					mod: this.ModManifest,
+					getValue: () => (float)this.Config.FlowersCategoryMultiplier,
+					setValue: value => this.Config.FlowersCategoryMultiplier = value,
+					name: () => "Flower Category Multiplier",
+					tooltip: () => "A multiplier for how much flowers deplete or replenish soil.",
+					min: 0.1f,
+					max: 3.0f,
+					interval: 0.05f
+			);
+
+
+			configMenu.AddNumberOption(
+				mod: this.ModManifest,
+				getValue: () => (float)this.Config.GreensCategoryMultiplier,
+				setValue: value => this.Config.GreensCategoryMultiplier = value,
+				name: () => "Greens Category Multiplier",
+				tooltip: () => "A multiplier for how much 'greens'(eg. spring onion) deplete or replenish soil.",
+				min: 0.1f,
+				max: 3.0f,
+				interval: 0.05f
+		);
+
+			configMenu.AddNumberOption(
+					mod: this.ModManifest,
+					getValue: () => (float)this.Config.GrowthDepletionMultiplier,
+					setValue: value => this.Config.GrowthDepletionMultiplier = value,
+					name: () => "Growth-Depletion Multiplier",
+					tooltip: () => "An overall multiplier for how much crops deplete or replenish soil.",
+					min: 0.1f,
+					max: 3.0f,
+					interval: 0.05f
+			);
+
+			configMenu.AddNumberOption(
+					mod: this.ModManifest,
+					getValue: () => (float)this.Config.RestrictionMultiplier,
+					setValue: value => this.Config.RestrictionMultiplier = value,
+					name: () => "Restriction Multiplier",
+					tooltip: () => "A multiplier for how restrictive nutrient requirements can be for soil.",
+					min: 0.1f,
+					max: 3.0f,
+					interval: 0.05f
+			);
+
+			configMenu.AddNumberOption(
+					mod: this.ModManifest,
+					getValue: () => this.Config.SoilNutritionCount,
+					setValue: value => this.Config.SoilNutritionCount = value,
+					name: () => "Restriction Multiplier",
+					tooltip: () => "A multiplier for how restrictive nutrient requirements can be for soil.",
+					min: 3,
+					max: 7,
+					interval: 1
+			);
+		}
 	}
 }

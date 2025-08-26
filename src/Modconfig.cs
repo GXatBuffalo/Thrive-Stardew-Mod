@@ -12,14 +12,13 @@ namespace Thrive.src
 	{
 		public int SoilNutritionCount { get; set; } = 5;
 
-		public double VegetableCategoryMultiplier { get; set; } = 1.0;
-		public double FruitsCategoryMultiplier { get; set; } = 1.0;
+		public double VegetableCategoryMultiplier { get; set; } = 0.95;
+		public double FruitsCategoryMultiplier { get; set; } = 1.05;
 		public double FlowersCategoryMultiplier { get; set; } = 1.2;
-		public double GreensCategoryMultiplier { get; set; } = 1.5;
+		public double GreensCategoryMultiplier { get; set; } = 1.4;
 
 		public double GrowthDepletionMultiplier { get; set; } = 1.0;
 		public double RestrictionMultiplier { get; set; } = 1.0;
-	
 	}
 
 	// https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors
