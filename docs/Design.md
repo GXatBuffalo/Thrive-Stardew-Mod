@@ -1,8 +1,8 @@
 ﻿# Thrive: A Stardew Valley Mod – Design Document
 
 **Author:** SomebodyUnown 
-**Last Updated:** 2025-08-20
-**Project Status:** In Progress, v0.2.0
+**Last Updated:** 2025-08-26
+**Project Status:** In Progress, v0.2.0alpha
 
 ---
 
@@ -207,6 +207,8 @@ graph TD
 - [x] Add SMAPI console logging to check for bugs and game state changes
 
 ### v0.2 - More Growth Mechanics
+- [x] Configuration file to adjust mechanics
+- [ ] Update code allowing for adjustment of soil variables.
 - [ ] Logic to adjust crop quality yields based on its overall health during growth.
 - [ ] Define logic for the creation of customized objects that undo soil depletion.
 - [ ] Custom player tool to measure soil and crop health.
@@ -218,8 +220,6 @@ graph TD
 - [x] Write script to analyze the modded crop data and their results
 - [ ] Adjust formulas for initializing base crop properties and their soil depletion rates
 - [ ] Implement multiple formulas that would be chosen at the start of a game save
-- [ ] Update code allowing for adjustment of soil variables.
-- [ ] Configuration file to adjust mechanics
 
 ### v0.4 - Basic Compatibility and Edge Cases
 - [ ] Introduce additional mechanics based on context tags of a crop or seed.
@@ -335,3 +335,4 @@ graph TD
 - API Reference: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs
 - Stardew Valley decompiled code (via ILSpy)
 - Stardew Valley Wiki: https://stardewvalleywiki.com/Stardew_Valley_Wiki
+- Configuration file: https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors
