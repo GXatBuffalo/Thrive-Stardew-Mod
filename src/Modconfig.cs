@@ -2,18 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 
 namespace Thrive.src
 {
 	public sealed class ModConfig
 	{
-		public double VegetableCategoryMult { get; set; } = 1.0;
-		public double FruitsCategoryMult { get; set; } = 1.0;
-		public double FlowersCategoryMult { get; set; } = 1.2;
-		public double GreensCategoryMult { get; set; } = 1.5;
+		public int SoilNutritionCount { get; set; } = 5;
 
+		public double VegetableCategoryMultiplier { get; set; } = 1.0;
+		public double FruitsCategoryMultiplier { get; set; } = 1.0;
+		public double FlowersCategoryMultiplier { get; set; } = 1.2;
+		public double GreensCategoryMultiplier { get; set; } = 1.5;
 
+		public double GrowthDepletionMultiplier { get; set; } = 1.0;
+		public double RestrictionMultiplier { get; set; } = 1.0;
+	
 	}
 
 	// https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors
