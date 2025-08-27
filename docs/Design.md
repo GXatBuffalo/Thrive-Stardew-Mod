@@ -1,7 +1,7 @@
 ﻿# Thrive: A Stardew Valley Mod – Design Document
 
 **Author:** SomebodyUnown 
-**Last Updated:** 2025-08-26
+**Last Updated:** 2025-08-27
 **Project Status:** In Progress, v0.2.0alpha
 
 ---
@@ -198,7 +198,7 @@ graph TD
 ---
 
 ## 5. Planned Roadmap
-### v0.1 – Foundations
+### v0.1 – Getting Started and Foundations
 - [x] Design and create multiple data structures to hold crop and soil data.
 - [x] Define initialization states for defined data structures.
 - [x] Define daily nutrient depletion depending on existing properties of in-game objects
@@ -206,36 +206,41 @@ graph TD
 - [x] Save or create crop and soil data through SMAPI
 - [x] Add SMAPI console logging to check for bugs and game state changes
 
-### v0.2 - More Growth Mechanics
+### v0.2 - Clear Definitions and Advanced Mechanics
 - [x] Configuration file to adjust mechanics
-- [ ] Update code allowing for adjustment of soil variables.
-- [ ] Logic to adjust crop quality yields based on its overall health during growth.
+- [x] Implement infrastructure for random but persistent-per-save formulas
+- [ ] Update code allowing for dynamic adjustment of soil variables.
+- [ ] Logic to update health of a growing crop.
+- [ ] Logic to adjust crop yields and quality based on a crop's health attributes on harvest.
 - [ ] Define logic for the creation of customized objects that undo soil depletion.
 - [ ] Custom player tool to measure soil and crop health.
 - [ ] i18n support.
 - [ ] Completely hook finished mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
 
-### v0.3 – Balancing
+### v0.3 – Balancing and Edge Cases
 - [x] Write test method that finds, creates and saves data for all in-game crops
 - [x] Write script to analyze the modded crop data and their results
 - [ ] Adjust formulas for initializing base crop properties and their soil depletion rates
-- [ ] Implement multiple formulas that would be chosen at the start of a game save
-
-### v0.4 - Basic Compatibility and Edge Cases
 - [ ] Introduce additional mechanics based on context tags of a crop or seed.
 - [ ] Giant crop compatibility
 - [ ] Check for and add logic to include "crop-like", growable objects that are coded differently.
 - [ ] Discourage farming in non-farm maps both to improve mod performance and for lore purposes.
 - [ ] Add save-versioning for Thrive's moddata
-- [ ] Tractor mod compatibility
-- [ ] Walk of Life and Vanilla Plus Professions compatibility
 
-### v0.5 - Player Interactions and User Interfaces
+### v0.4 - Player Interactions and User Interfaces
 - [ ] HUD elements for viewing soil health for custom tool/object
 - [ ] HUD elements for viewing crop depletion or replenishment rates for custom tool or 
 - [ ] Menu to look at all known data
 - [ ] Menu to look at rough known data of current map.
 - [ ] Integration with mod 'Better Game Menu'
+
+### v0.5 Multiplayer Support and Compatibility
+- [ ] Make sure soil data is consistent.
+- [ ] Make sure crop attributes are consistent.
+- [ ] Make sure formulas used are consistent.
+- [ ] Make sure harvest crop attributes are consistent.
+- [ ] Tractor mod compatibility
+- [ ] Walk of Life and Vanilla Plus Professions compatibility
 
 ### v0.6 - Beta Test 1
 - [ ] Recruit testers from modding community to gather performance metrics and bug reports.
