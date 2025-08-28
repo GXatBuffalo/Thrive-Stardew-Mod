@@ -199,72 +199,73 @@ graph TD
 
 ## 5. Planned Roadmap
 ### v0.1 – Getting Started and Foundations
-- [x] Design and create multiple data structures to hold crop and soil data.
-- [x] Define initialization states for defined data structures.
-- [x] Define daily nutrient depletion depending on existing properties of in-game objects
-- [x] Add compatibility with crops utilizing context tags that mention 'magic'
-- [x] Save or create crop and soil data through SMAPI
-- [x] Add SMAPI console logging to check for bugs and game state changes
+- [x] Initialize base project template and manifest.
+- [x] Design and implement core data structures to hold crop and soil data.
+- [x] Define initialization logic for data structures.
+- [x] Define daily nutrient depletion based on in-game objects' existing properties.
+- [x] Add compatibility with crops utilizing context tags mentioning 'magic'.
+- [x] Logic to update health of a growing crop.
+- [x] Enable saving and loading of crop/soil data via SMAPI.
+- [x] Add SMAPI console logging for debugging and game state tracking.
 
 ### v0.2 - Clear Definitions and Advanced Mechanics
-- [x] Configuration file to adjust mechanics
-- [x] Implement infrastructure for random but persistent-per-save formulas
-- [ ] Update code allowing for dynamic adjustment of soil variables.
-- [ ] Logic to update health of a growing crop.
-- [ ] Logic to adjust crop yields and quality based on a crop's health attributes on harvest.
-- [ ] Define logic for the creation of customized objects that undo soil depletion.
-- [ ] Custom player tool to measure soil and crop health.
-- [ ] i18n support.
-- [ ] Completely hook finished mechanics into game start, save start, day start, harvest, planting, and tool use, etc.
+- [x] Add configuration file with Generic Mod Config Menu (GMCM) support for adjustable mechanics.
+- [x] Implement infrastructure for persistent, per-save random formula assignment.
+- [ ] Update code allowing for dynamic number of soil properties.
+- [ ] Logic to adjust yields and quality based on crop health on harvest.
+- [ ] Define logic for customized objects that undo soil depletion.
+- [ ] Introduce custom player tools for measuring soil and crop health.
+- [ ] Add internationalization (i18n) support.
+- [ ] Fully integrate mechanics onto game triggers (save start, day start, planting, harvest, tool use, etc.).
 
 ### v0.3 – Balancing and Edge Cases
-- [x] Write test method that finds, creates and saves data for all in-game crops
-- [x] Write script to analyze the modded crop data and their results
-- [ ] Adjust formulas for initializing base crop properties and their soil depletion rates
-- [ ] Introduce additional mechanics based on context tags of a crop or seed.
-- [ ] Giant crop compatibility
-- [ ] Check for and add logic to include "crop-like", growable objects that are coded differently.
-- [ ] Discourage farming in non-farm maps both to improve mod performance and for lore purposes.
+- [x] Create test method to generate, save, and validate data for all in-game crops.
+- [x] Implement script to analyze vanilla and modded crop data and results.
+- [ ] Balance base crop initialization formulas and soil depletion rates.
+- [ ] Introduce mechanics tied to existing crop/seed context tags.
+- [ ] Add giant crop compatibility.
+- [ ] Add support for non-standard “crop-like” growable and harvestable objects.
+- [ ] Discourage farming outside farm maps for both lore and performance reasons.
 - [ ] Add save-versioning for Thrive's moddata
 
 ### v0.4 - Player Interactions and User Interfaces
 - [ ] HUD elements for viewing soil health for custom tool/object
 - [ ] HUD elements for viewing crop depletion or replenishment rates for custom tool or 
-- [ ] Menu to look at all known data
-- [ ] Menu to look at rough known data of current map.
+- [ ] Menu to view all known data.
+- [ ] Menu to view summarized data for the current map.
 - [ ] Integration with mod 'Better Game Menu'
 
 ### v0.5 Multiplayer Support and Compatibility
-- [ ] Make sure soil data is consistent.
-- [ ] Make sure crop attributes are consistent.
-- [ ] Make sure formulas used are consistent.
-- [ ] Make sure harvest crop attributes are consistent.
-- [ ] Tractor mod compatibility
-- [ ] Walk of Life and Vanilla Plus Professions compatibility
+- [ ] Ensure soil data synchronizationrs.
+- [ ] Ensure crop attribute synchronization.
+- [ ] Ensure consistency of formula selection.
+- [ ] Ensure consistent harvest attribute outcomes.
+- [ ] Add compatibility with mod “Tractor".
+- [ ] Add compatibility with mods “Walk of Life” and “Vanilla Plus Professions”.
 
 ### v0.6 - Beta Test 1
-- [ ] Recruit testers from modding community to gather performance metrics and bug reports.
+- [ ] Recruit testers from the modding community to collect performance data and bug reports.
 - [ ] Collect professional feedback from experienced mod authors and players.
-- [ ] Code review from experienced mod authors
-- [ ] Fix bugs found and reported errors.
-- [ ] Refactor based on code review
-- [ ] Add additional compatibility for common conflicting mods.
-- [ ] Change, add, or edit mechanics based on feedback gathered.
+- [ ] Conduct peer code review.
+- [ ] Resolve reported bugs and errors.
+- [ ] Refactor code based on review feedback.
+- [ ] Add compatibility for frequently conflicting mods.
+- [ ] Adjust mechanics based on beta test feedback.
 
 ### v0.7 - Lore Integration
-- [ ] Mail from Demetrius informing the user of basic mechanics
-- [ ] Event with Demetrius to encourage consideration of mechanics and to give player ability to analyze crop/soil stats.
-- [ ] Event with various other NPCs (???)
-- [ ] ConversationTopics depending on how well player manages their farm and its crops/soil.
+- [ ] Add mail from Demetrius introducing basic mechanics.
+- [ ] Add event with Demetrius to explain soil/crop stats, grant analysis tools, and encourage exploration.
+- [ ] Create additional NPC events related to soil/crop management.
+- [ ] Add ConversationTopics reflecting farm management success.
 
 ### v0.8 - Beta Test 2
-- [ ] Collect narrative feedback and bug reports
-- [ ] Fix reported issues and bugs
-- [ ] Improve event writing for pacing, tone, and/or clarity
+- [ ] Collect narrative-specific feedback and bug reports.
+- [ ] Resolve reported bugs and errors.
+- [ ] Address reported issues and polish event writing (pacing, tone, clarity).
 
 ### v1.0 - Release
-- [ ] Add GitHub release with changelog and installation instructions
-- [ ] Write a mod description that compels players but also effectively informs and publish on nexusmods.
+- [ ] Publish GitHub release with changelog and installation instructions.
+- [ ] Publish mod with compelling description and informative instructions on NexusMods.
 - [ ] Gather player feedback for potential post-launch patches
 
 ### v2.0 - Nutrition Mechanics for Characters
