@@ -8,16 +8,14 @@ namespace Thrive.src.Domain
 		public int ManaMax { get; set; }
 		public int MapMana { get; set; }
 		public SoilNutrition[][] MapData { get; set; }
-		public Dictionary<(int, int), int> MagicCrops { get; set; }//<(xcord, ycord), manacost>
+		public Dictionary<(int, int), int> MagicCrops { get; set; } = new();
 
 		public NutritionMap(int sizeX, int sizeY, int initialMana)
 		{
 			MapMana = initialMana;
-			MapData = new SoilNutrition[sizeX][];
-			for (int i = 0; i < sizeX; i++)
-				MapData[i] = new SoilNutrition[sizeY];
-
-			MagicCrops = new Dictionary<(int, int), int>();  
+			MapData = new SoilNutrition[sizeY][];
+			for (int i = 0; i < sizeY; i++)
+				MapData[i] = new SoilNutrition[sizeX];
 		}
 
 		public void AddMagicCrop(int x, int y, int manaCost) => MagicCrops[(x, y)] = manaCost;

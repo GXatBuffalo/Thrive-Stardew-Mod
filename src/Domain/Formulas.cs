@@ -6,17 +6,29 @@ using System.Threading.Tasks;
 
 namespace Thrive.src.Domain
 {
-	internal class Formulas
+	static class Formulas
 	{
 		public delegate double Formula(Random rand, int a, int b, int c, int d);
+		public static readonly List<Formula> CropFormulas = new()
+		{
+				formulaB,
+				HighClusterSqrt,
+				HighClusterPow,
+				StableWithJitter,
+				Logistic
+		};
 
-		private static double numberMerge(Random rand, int a, int b, int c, int d)
+		public static double ApplyConfigsAndLevel(){
+			return 0.0;
+		}
+
+		public static double numberMerge(Random rand, int a, int b, int c, int d)
 		{
 			double crop_factor = (Math.Sqrt(a * (b * 3.625) * c * 3) / d);
 			return crop_factor;
 		}
 
-		private static double formulaB(Random rand, int a, int b, int c, int d)
+		public static double formulaB(Random rand, int a, int b, int c, int d)
 		{
 			return (Math.Sqrt(200 / numberMerge(rand, a, b, c, d)) - 3.0) * 1.2;
 		}
@@ -40,14 +52,14 @@ namespace Thrive.src.Domain
 			double jitter = rand.NextDouble() * 0.06 - 0.03;
 			return 100 * Math.Clamp(sig + jitter, 0, 1);
 		}
-		public static readonly List<Formula> All = new()
-		{
-				formulaB,
-				HighClusterSqrt,
-				HighClusterPow,
-				StableWithJitter,
-				Logistic
-		};
 
+		public static int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max);
+
+		public delegate double InitializationFormulas(Random rand, int x, int y, int index);
+
+		public static readonly List<InitializationFormulas> SoilInitFormulas = new()
+		{
+
+		};
 	}
 }

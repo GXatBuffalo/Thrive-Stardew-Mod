@@ -3,23 +3,23 @@ using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Thrive.src;
 
 namespace Thrive.src.Domain
 {
 	public class CropData
 	{
 		/// NOTE: The formulas are strictly for LOGIC purposes at the current time. The numbers and formula is likely to be fiddled with before actual releases.
-		// placeholder, base stats for nutrition when eaten. 
+
 		public List<int> Stats { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
-		// requirements and their range. even numbers, base number, odd is range.
+
 		public List<double> Requirements { get; set; }
-		// how much to increase or decrease soil quality/stats by each day
+
 		public List<double> SoilDeprecation { get; set; }
 		public bool isMagic { get; set; } = false;
 
-		public CropData(string seedID)
+		public CropData(string seedID, Random rand)
 		{
-			Random rand = new Random();
 			Game1.cropData.TryGetValue(seedID, out var seedData);
 			Game1.objectData.TryGetValue(seedData.HarvestItemId, out var produceData);
 			//reminder - crop attributes: growth time, XP, Energy, Health, Base Price, category, seasons, multiharvest

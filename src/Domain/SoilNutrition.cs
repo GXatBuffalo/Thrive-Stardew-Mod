@@ -1,4 +1,6 @@
-﻿using System;
+﻿using StardewModdingAPI.Events;
+using StardewValley;
+using System;
 using System.Collections.Generic;
 
 namespace Thrive.src.Domain
@@ -9,10 +11,18 @@ namespace Thrive.src.Domain
 		public List<double> SoilStats { get; set; }
 		public List<int> Health { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
 
-		public SoilNutrition(string id, int nitro, int phos, int ph, int iridium)
+		private SoilNutrition(string id, Random rand, int nutriCount, int x, int y, Formulas.InitializationFormulas appliedFormula)
 		{
 			CropID = id;
-			SoilStats = new List<double> { nitro, phos, ph, iridium };
+			InitializeSoil(rand, nutriCount, x, y, appliedFormula);
 		}
-	}
+		
+		private void InitializeSoil(Random rand, int nutriCount, int x, int y, Formulas.InitializationFormulas appliedFormula)
+		{
+			for (int i = 0; i < nutriCount; i++)
+			{
+				SoilStats[i] = appliedFormula(rand, x, y, i);
+			}
+		}
+
 }

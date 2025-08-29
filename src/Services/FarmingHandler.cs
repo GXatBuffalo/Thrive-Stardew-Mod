@@ -1,6 +1,7 @@
-﻿using System;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
+using System.Collections.Generic;
+using Thrive.src;
 using Thrive.src.Domain;
 
 namespace Thrive.src.Services
@@ -9,24 +10,28 @@ namespace Thrive.src.Services
 	{
 		public IMonitor Monitor { get; }
 		public IModHelper gameHandler { get; }
+
+		public List<string> SoilNutrientNames { get; set; } = new List<string> { "Nitro", "Phos", "pH", "Aera", "Microbes" };
 		public int nutriMin = 0;
 		public int nutriMax = 1000;
 		public NutritionMap CurrentMap { get; private set; } = new NutritionMap(0, 0, 0);
 		public string? CurrentKey { get; private set; } 
 		public Dictionary<string, CropData> KnownCropDict { get; set; } = new Dictionary<string, CropData>();
+		private List<Formulas.Formula> FormulaList { get; set; }
 
 		public FarmingHandler(IModHelper helper, IMonitor monitor)
 		{
 			Monitor = monitor;
 			gameHandler = helper;
+			Random rand = new Random((int)Game1.uniqueIDForThisGame);
+			FormulaList = Formulas.CropFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
 		}
 
-		private int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max);
-
-		public void SetNitro(SoilNutrition dirtData, int n) => dirtData.SoilStats[0] = Clamp(n, nutriMin, nutriMax);
-		public void SetPhos(SoilNutrition dirtData, int p) => dirtData.SoilStats[1] = Clamp(p, nutriMin, nutriMax);
-		public void SetpH(SoilNutrition dirtData, int x) => dirtData.SoilStats[2] = Clamp(x, nutriMin, nutriMax);
-		public void SetIridium(SoilNutrition dirtData, int i) => dirtData.SoilStats[3] = Clamp(i, nutriMin, nutriMax);
+		public void InitializeFormulas(){
+			List<Formulas.Formula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.Formula>>("Thrive.FormulaList");
+			Random rand = new Random((int)Game1.uniqueIDForThisGame);
+			FormulaList = Formulas.CropFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
+		}
 
 		public void StarterMap()
 		{
@@ -52,7 +57,8 @@ namespace Thrive.src.Services
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
 		public void UpdateSoilAndCropHealth(SoilNutrition sn, CropData cd)
 		{
-			for (int x = 0; x < 4; x++)
+			var configs = gameHandler.ReadConfig<ModConfig>();
+			for (int x = 0; x < configs.SoilNutritionCount-2; x++)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
 					sn.Health[x] += 10;
@@ -77,7 +83,7 @@ namespace Thrive.src.Services
 		{
 			var seedData = Game1.cropData;
 			Dictionary<string, List<int>> results = new();
-			Random rand = new Random();
+			Random rand = new Random((int)Game1.uniqueIDForThisGame);
 			foreach (KeyValuePair<string, StardewValley.GameData.Crops.CropData> kvp in seedData)
 			{
 				Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
@@ -93,7 +99,7 @@ namespace Thrive.src.Services
 						produceData.Category
 						}
 					);
-					KnownCropDict[kvp.Key] = new CropData(kvp.Key);
+					KnownCropDict[kvp.Key] = new CropData(kvp.Key, rand);
 				}
 				catch { };
 			}
