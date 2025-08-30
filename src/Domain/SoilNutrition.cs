@@ -11,18 +11,18 @@ namespace Thrive.src.Domain
 		public List<double> SoilStats { get; set; }
 		public List<int> Health { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
 
-		private SoilNutrition(string id, Random rand, int nutriCount, int x, int y, Formulas.InitializationFormulas appliedFormula)
+		public SoilNutrition(string id, Random rand, int nutriCount, int x, int y, Formulas.InitializationFormulas appliedFormula)
 		{
 			CropID = id;
 			InitializeSoil(rand, nutriCount, x, y, appliedFormula);
 		}
-		
-		private void InitializeSoil(Random rand, int nutriCount, int x, int y, Formulas.InitializationFormulas appliedFormula)
+
+		public void InitializeSoil(Random rand, int nutriCount, int x, int y, Formulas.InitializationFormulas appliedFormula)
 		{
 			for (int i = 0; i < nutriCount; i++)
 			{
 				SoilStats[i] = appliedFormula(rand, x, y, i);
 			}
 		}
-
+	}
 }

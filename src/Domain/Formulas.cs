@@ -6,16 +6,28 @@ using System.Threading.Tasks;
 
 namespace Thrive.src.Domain
 {
-	static class Formulas
+	public static class Formulas
 	{
-		public delegate double Formula(Random rand, int a, int b, int c, int d);
-		public static readonly List<Formula> CropFormulas = new()
+		public delegate double InitializationFormulas(Random rand, int x, int y, int index);
+		public static readonly List<InitializationFormulas> SoilInitFormulas = new()
+		{
+
+		};
+
+		public delegate double RequirementFormula(Random rand, int a, int b, int c, int d);
+		public static readonly List<RequirementFormula> CropRequirementFormulas = new()
 		{
 				formulaB,
 				HighClusterSqrt,
 				HighClusterPow,
 				StableWithJitter,
 				Logistic
+		};
+
+		public delegate double DepreciationFormula(Random rand, int a, int b, int c, int d);
+		public static readonly List<RequirementFormula> CropDepreciationFormulas = new()
+		{
+
 		};
 
 		public static double ApplyConfigsAndLevel(){
@@ -55,11 +67,5 @@ namespace Thrive.src.Domain
 
 		public static int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max);
 
-		public delegate double InitializationFormulas(Random rand, int x, int y, int index);
-
-		public static readonly List<InitializationFormulas> SoilInitFormulas = new()
-		{
-
-		};
 	}
 }

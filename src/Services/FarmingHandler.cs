@@ -11,29 +11,30 @@ namespace Thrive.src.Services
 		public IMonitor Monitor { get; }
 		public IModHelper gameHandler { get; }
 
-		public List<string> SoilNutrientNames { get; set; } = new List<string> { "Nitro", "Phos", "pH", "Aera", "Microbes" };
+		public List<string> SoilNutrientNames { get; set; } = new List<string> { "Nitro", "Phos", "Aera", "pH", "Microbes" };
 		public int nutriMin = 0;
 		public int nutriMax = 1000;
 		public NutritionMap CurrentMap { get; private set; } = new NutritionMap(0, 0, 0);
 		public string? CurrentKey { get; private set; } 
 		public Dictionary<string, CropData> KnownCropDict { get; set; } = new Dictionary<string, CropData>();
-		private List<Formulas.Formula> FormulaList { get; set; }
+		private List<Formulas.RequirementFormula> FormulaList { get; set; }
 
 		public FarmingHandler(IModHelper helper, IMonitor monitor)
 		{
 			Monitor = monitor;
 			gameHandler = helper;
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			FormulaList = Formulas.CropFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
+			FormulaList = Formulas.CropRequirementFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
 		}
 
+		//remember to run and save somewhere if formulas is null
 		public void InitializeFormulas(){
-			List<Formulas.Formula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.Formula>>("Thrive.FormulaList");
+			List<Formulas.RequirementFormula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.RequirementFormula>>("Thrive.FormulaList");
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			FormulaList = Formulas.CropFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
+			TempFormulaList = Formulas.CropRequirementFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
 		}
 
-		public void StarterMap()
+		public void StartMap()
 		{
 			int width = Game1.currentLocation.Map.Layers[0].LayerWidth;
 			int height = Game1.currentLocation.Map.Layers[0].LayerHeight;
@@ -58,7 +59,7 @@ namespace Thrive.src.Services
 		public void UpdateSoilAndCropHealth(SoilNutrition sn, CropData cd)
 		{
 			var configs = gameHandler.ReadConfig<ModConfig>();
-			for (int x = 0; x < configs.SoilNutritionCount-2; x++)
+			for (int x = 0; x < configs.SoilNutritionCount+2; x++)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
 					sn.Health[x] += 10;
@@ -67,18 +68,9 @@ namespace Thrive.src.Services
 
 				sn.SoilStats[x] -= cd.SoilDeprecation[x];
 			}
-
-			if (cd.isMagic)
-			{
-				if (Math.Abs(sn.SoilStats[4] - cd.Requirements[8]) <= Math.Abs(cd.Requirements[9]))
-					sn.Health[4] += 10;
-				else
-					sn.Health[4] -= 18;
-
-				sn.SoilStats[4] -= cd.SoilDeprecation[4];
-			}
 		}
 
+		/*
 		public void TestSetAllCropData()
 		{
 			var seedData = Game1.cropData;
@@ -108,5 +100,6 @@ namespace Thrive.src.Services
 			gameHandler.Data.WriteJsonFile("exported-data.json", KnownCropDict);
 			gameHandler.Data.WriteJsonFile("exported-data-v.json", results);
 		}
+		*/
 	}
 }
