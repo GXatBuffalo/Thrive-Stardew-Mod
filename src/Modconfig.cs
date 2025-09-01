@@ -10,7 +10,7 @@ namespace Thrive.src
 {
 	public sealed class ModConfig
 	{
-		public int SoilNutritionCount { get; set; } = 5;
+		public int SoilNutritionCount { get; set; } = 3;
 
 		public double VegetableCategoryMultiplier { get; set; } = 0.95;
 		public double FruitsCategoryMultiplier { get; set; } = 1.05;

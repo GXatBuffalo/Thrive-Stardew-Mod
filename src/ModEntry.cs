@@ -1,6 +1,8 @@
-﻿using StardewModdingAPI;
+﻿using HarmonyLib;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using Thrive.src.Services;
+using StardewValley;
 
 namespace Thrive.src
 {
@@ -14,7 +16,7 @@ namespace Thrive.src
 			if (F_Handler == null) // initialize once
 			{
 				F_Handler = new FarmingHandler(Helper, Monitor);
-				F_Handler.TestSetAllCropData();
+				//F_Handler.TestSetAllCropData();
 				Monitor.Log("FarmingHandler initialized.", LogLevel.Info);
 			}
 		}
@@ -30,6 +32,16 @@ namespace Thrive.src
 		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
 		{
 			SetConfigMenu(sender, e);
+		}
+
+		private void HarmonyPatching(){
+			var harmony = new Harmony(this.ModManifest.UniqueID);
+
+			// example patch
+			harmony.Patch(
+				 original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.canBePlacedHere)),
+				 transpiler: new HarmonyMethod(typeof(StardewValley.Crop), nameof(HarmonyHarvest)) //warning, double check before building solution
+			);
 		}
 
 		private void SetConfigMenu(object? sender, GameLaunchedEventArgs e) {
@@ -117,10 +129,10 @@ namespace Thrive.src
 					mod: this.ModManifest,
 					getValue: () => this.Config.SoilNutritionCount,
 					setValue: value => this.Config.SoilNutritionCount = value,
-					name: () => "Restriction Multiplier",
-					tooltip: () => "A multiplier for how restrictive nutrient requirements can be for soil.",
-					min: 3,
-					max: 7,
+					name: () => "Nutrition Property Count",
+					tooltip: () => "Number of addtional soil properties to use (iridium and mana always on by default).",
+					min: 1,
+					max: 5,
 					interval: 1
 			);
 		}

@@ -8,14 +8,14 @@ namespace Thrive.src.Domain
 {
 	public static class Formulas
 	{
-		public delegate double InitializationFormulas(Random rand, int x, int y, int index);
-		public static readonly List<InitializationFormulas> SoilInitFormulas = new()
+		public delegate double SoilInitializationFormulas(Random rand, int x, int y, int index);
+		public static readonly List<SoilInitializationFormulas> SoilInitFormulas = new()
 		{
 
 		};
 
-		public delegate double RequirementFormula(Random rand, int a, int b, int c, int d);
-		public static readonly List<RequirementFormula> CropRequirementFormulas = new()
+		public delegate double CropRequirementFormula(Random rand, int a, int b, int c, int d);
+		public static readonly List<CropRequirementFormula> CropReqFormulas = new()
 		{
 				formulaB,
 				HighClusterSqrt,
@@ -24,8 +24,8 @@ namespace Thrive.src.Domain
 				Logistic
 		};
 
-		public delegate double DepreciationFormula(Random rand, int a, int b, int c, int d);
-		public static readonly List<RequirementFormula> CropDepreciationFormulas = new()
+		public delegate double CropDepreciationFormula(Random rand, int a, int b, int c, int d);
+		public static readonly List<CropDepreciationFormula> CropDepreFormulas = new()
 		{
 
 		};

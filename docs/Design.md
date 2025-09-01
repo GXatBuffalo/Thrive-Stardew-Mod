@@ -191,7 +191,7 @@ graph TD
 - **Frameworks:**
   - **SMAPI** – Primary modding API for loading custom C# logic into the game loop and data model.
   - **Content Patcher** – Handles adding content and asset (e.g., custom events) without custom code.
-- **Language:** C# (target .NET Framework 6.0)
+- **Language:** C# (target .NET Framework 6.0), CIL
 - **Tooling:** Visual Studio 2022 for development and debugging.
 - **Build System:** MSBuild with SMAPI mod packaging format.
 
@@ -210,8 +210,8 @@ graph TD
 
 ### v0.2 - Clear Definitions and Advanced Mechanics
 - [x] Add configuration file with Generic Mod Config Menu (GMCM) support for adjustable mechanics.
-- [x] Implement infrastructure for persistent, per-save random formula assignment.
-- [ ] Update code allowing for dynamic number of soil properties.
+- [x] Implement infrastructure for persistent per-save but randomized distribution formulas for various mechanics.
+- [x] Update code logic allowing for dynamic number of soil properties.
 - [ ] Logic to adjust yields and quality based on crop health on harvest.
 - [ ] Define logic for customized objects that undo soil depletion.
 - [ ] Introduce custom player tools for measuring soil and crop health.
@@ -236,7 +236,7 @@ graph TD
 - [ ] Integration with mod 'Better Game Menu'
 
 ### v0.5 Multiplayer Support and Compatibility
-- [ ] Ensure soil data synchronizationrs.
+- [ ] Ensure soil data synchronization.
 - [ ] Ensure crop attribute synchronization.
 - [ ] Ensure consistency of formula selection.
 - [ ] Ensure consistent harvest attribute outcomes.
@@ -270,8 +270,9 @@ graph TD
 
 ### v2.0 - Nutrition Mechanics for Characters
 
-### v3.0 - Expanded Sustainable Farming
-- [ ] Deeper mechanics involving pests or symbiotic animals or other organisms
+### v3.0 - Expanded Sustainable Farming and Environmental Impacts
+- [ ] Add deeper mechanics involving pests or symbiotic animals or other organisms
+- [ ] Add algae blooms tied to overcapping certain soil properties levels.
 
 ### v3.2 - Lore Integration with Newly Relevant Characters
 
@@ -316,6 +317,12 @@ graph TD
 
 - *Trade-off*: Python provides rapid prototyping, easier statistical analysis, and better tooling for balancing compared to C#. However, this requires additional functionality for accumulating data and exporting it outside the game.
 
+### Harmony Patching
+
+- Harmony is used to inject, change, or surpress game code during runtime. This allows for more control over game behaviors. eg. This enables us to alter the rewards from the harvesting action, etc.
+
+- *Trade-off*: Harmony patching is a powerful but risky tool. Injecting code at runtime, especially in popular methods to alter such as Crops.Harvest results in a high chance of errors and compatibility issuees.
+
 ---
 
 
@@ -331,14 +338,17 @@ graph TD
 | **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, objects). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
 | **i18n**                 | A format mods use to provide ease of translations.                                                               | 
 |**moddata**               | Custom data made and used by a mod. Can be saved or loaded through SMAPI |
-
+| **Harmony**              | A library for patching, replacing and decorating .NET methods during runtime.
+| **transpiler**           | A program used to convert a programming language to another. In the case of this project, C# is converted into CIL before compilation.
+| **transpiler patching**   | 
 
 ---
 
 ## 8. References
+- API Reference: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs
 - Beginner's Guide: https://stardewvalleywiki.com/Modding:Modder_Guide/Get_Started
 - Saving and retrieving data: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Data
-- API Reference: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs
+- Harmony Patching & Transpilers: https://stardewmodding.wiki.gg/wiki/Tutorial:_Harmony_Patching#Transpilers
 - Stardew Valley decompiled code (via ILSpy)
 - Stardew Valley Wiki: https://stardewvalleywiki.com/Stardew_Valley_Wiki
 - Configuration file: https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors

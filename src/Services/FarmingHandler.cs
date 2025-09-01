@@ -1,5 +1,11 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
+using StardewValley.Extensions;
+using StardewValley.GameData.Crops;
+using StardewValley.Objects;
+using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 using Thrive.src;
 using Thrive.src.Domain;
@@ -17,21 +23,21 @@ namespace Thrive.src.Services
 		public NutritionMap CurrentMap { get; private set; } = new NutritionMap(0, 0, 0);
 		public string? CurrentKey { get; private set; } 
 		public Dictionary<string, CropData> KnownCropDict { get; set; } = new Dictionary<string, CropData>();
-		private List<Formulas.RequirementFormula> FormulaList { get; set; }
+		private List<Formulas.CropRequirementFormula> FormulaList { get; set; }
 
 		public FarmingHandler(IModHelper helper, IMonitor monitor)
 		{
 			Monitor = monitor;
 			gameHandler = helper;
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			FormulaList = Formulas.CropRequirementFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
+			FormulaList = Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
 		}
 
 		//remember to run and save somewhere if formulas is null
 		public void InitializeFormulas(){
-			List<Formulas.RequirementFormula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.RequirementFormula>>("Thrive.FormulaList");
+			List<Formulas.CropRequirementFormula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.CropRequirementFormula>>("Thrive.FormulaList");
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			TempFormulaList = Formulas.CropRequirementFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
+			TempFormulaList = Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
 		}
 
 		public void StartMap()
@@ -56,7 +62,7 @@ namespace Thrive.src.Services
 		}
 
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
-		public void UpdateSoilAndCropHealth(SoilNutrition sn, CropData cd)
+		public void UpdateSoilAndCropHealth(SoilNutrition sn, Domain.CropData cd)
 		{
 			var configs = gameHandler.ReadConfig<ModConfig>();
 			for (int x = 0; x < configs.SoilNutritionCount+2; x++)

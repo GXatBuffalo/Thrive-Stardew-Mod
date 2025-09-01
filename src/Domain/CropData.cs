@@ -18,7 +18,7 @@ namespace Thrive.src.Domain
 		public List<double> SoilDeprecation { get; set; } = new();
 		public bool isMagic { get; set; } = false;
 
-		public CropData(string seedID, Random rand, List<Formulas.RequirementFormula> reqFormulas, List<Formulas.DepreciationFormula> depreFormulas, int nutriCount)
+		public CropData(string seedID, Random rand, List<Formulas.CropRequirementFormula> reqFormulas, List<Formulas.CropDepreciationFormula> depreFormulas, int soilVarCount)
 		{
 			Game1.cropData.TryGetValue(seedID, out var seedData);
 			Game1.objectData.TryGetValue(seedData.HarvestItemId, out var produceData);
@@ -31,12 +31,12 @@ namespace Thrive.src.Domain
 			double crop_factor = (Math.Sqrt(price * (edibility * 3.625) * xp * 3) / growthphase);
 			isMagic = produceData.ContextTags.Any(s => s.Contains("magic", StringComparison.OrdinalIgnoreCase));
 
-			for (int i = 2; i < nutriCount; i++)
+			for (int i = 2; i < soilVarCount; i++)
 			{
 				SoilDeprecation[i] = reqFormulas[i](rand, price, edibility, (int)xp, growthphase);
 			}
 
-			for (int i = 2; i < nutriCount; i++)
+			for (int i = 2; i < soilVarCount; i++)
 			{
 				Requirements[i*2] = reqFormulas[i](rand, price, edibility, (int)xp, growthphase);
 			}
