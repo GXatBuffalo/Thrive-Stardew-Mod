@@ -37,10 +37,9 @@ namespace Thrive.src
 		private void HarmonyPatching(){
 			var harmony = new Harmony(this.ModManifest.UniqueID);
 
-			// example patch
 			harmony.Patch(
-				 original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.canBePlacedHere)),
-				 transpiler: new HarmonyMethod(typeof(StardewValley.Crop), nameof(HarmonyHarvest)) //warning, double check before building solution
+				 original: AccessTools.Method(typeof(StardewValley.Crop), nameof(Crop.harvest)),
+				 transpiler: new HarmonyMethod(typeof(HarmonyHarvest), nameof(HarmonyHarvest.AddProperties_Transpiler))
 			);
 		}
 
