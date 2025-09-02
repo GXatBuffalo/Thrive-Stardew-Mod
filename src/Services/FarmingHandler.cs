@@ -22,7 +22,7 @@ namespace Thrive.src.Services
 		public int nutriMax = 1000;
 		public NutritionMap CurrentMap { get; private set; } = new NutritionMap(0, 0, 0);
 		public string? CurrentKey { get; private set; } 
-		public Dictionary<string, CropData> KnownCropDict { get; set; } = new Dictionary<string, CropData>();
+		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; } = new Dictionary<string, Domain.CropData>();
 		private List<Formulas.CropRequirementFormula> FormulaList { get; set; }
 
 		public FarmingHandler(IModHelper helper, IMonitor monitor)

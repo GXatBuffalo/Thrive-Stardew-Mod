@@ -1,14 +1,18 @@
 ﻿using HarmonyLib;
+using Netcode;
 using StardewModdingAPI;
+using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Thrive.src.Services
 {
-	internal class HarmonyHarvest
+	public static class CropQuality_HarmonyPatch
 	{
 		private static IMonitor Monitor;
 
@@ -17,16 +21,33 @@ namespace Thrive.src.Services
 		{
 			Monitor = monitor;
 		}
-		public static void AddProperties_Transpiler(){
-			try
-			{
-				;
 
-			}
-			catch (Exception ex)
-			{
-				Monitor.Log($"Failed in harmony patch {nameof(AddProperties_Transpiler)}: {ex}\n", LogLevel.Error);
-			}
+		public static IEnumerable<CodeInstruction> Harvest_Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			CodeMatcher matcher = new(instructions);
+			MethodInfo farmerProfessionsInfo = AccessTools.PropertyGetter(typeof(StardewValley.Farmer), nameof(StardewValley.Farmer.professions));
+			MethodInfo myCropQualityInfo = AccessTools.PropertyGetter(typeof(int), nameof(MyCropQuality));
+			MethodInfo addPropertiesInfo = AccessTools.PropertyGetter(typeof(string), nameof(AddProperties));
+
+			matcher.MatchStartForward(
+				new CodeMatch(OpCodes.Ldfld, farmerProfessionsInfo)
+				)
+				.ThrowIfNotMatch($"Could not find entry point for {nameof(Harvest_Transpiler)}")
+				.RemoveInstructionsWithOffsets(-1, 32)
+				.Insert(
+					new CodeInstruction(OpCodes.Call, myCropQualityInfo),
+					new CodeInstruction(OpCodes.Call, addPropertiesInfo)
+				);
+
+			return matcher.InstructionEnumeration();
+		}
+
+		public static void MyCropQuality(){
+
+		}
+
+		public static void AddProperties(){
+
 		}
 	}
 }
