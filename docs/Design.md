@@ -56,39 +56,45 @@ The philosophy is to **blend realism with game balance**:
 
 **Feature Roadmap to Architecture Mapping**
 
-| Roadmap Version & Feature                                          | Domain Layer | Services Layer | objects Layer | UI Layer   | Events Layer | ModEntry    |
-|--------------------------------------------------------------------|--------------|----------------|-------------|------------|--------------|-------------|
-| **v0.1 – Basic Core Systems**                                      | ✅           | ✅             |             |            |              | ✅         |
-| Crop & soil data structures                                        | ✅           |                |             |            |              |             |
-| Initialization states                                              | ✅           |                |             |            |              |             |
-| Save/load data via SMAPI                                           |              | ✅             |             |            |              | ✅          |
-| Daily nutrient depletion & bonuses/penalties                       | ✅           |                |             |            |              |             |
-| Dynamically adjust crop quality yields                            | ✅           |                |             |            |              |             |
-| **v0.2 – Balancing**                                               | ✅           |                |             |            |              |             |
-| Adjust formulas in various game mechanics                          | ✅           |                |             |            |              |             |
-| **v0.3 – Game Integration**                                        | ✅           | ✅             | ✅          |           |              | ✅          |
-| Hook into game events                                              |              | ✅             |             |            |              | ✅          |
-| Custom tool/object to measure soil/crop health                       |              | ✅             | ✅          |            |              |             |
-| Custom objects to improve soil quality                               |              | ✅             | ✅          |            |              | ✅          |
-| Discourage farming on non-farm maps                                |              | ✅             |             |            |              | ✅          |
-| **v0.4 – Compatibility & Edge Cases**                              | ✅           | ✅             |             |            |              |             |
-| Context-tag-based support                                          | ✅           | ✅             |             |            |              |             |
-| Edge-case object support                                             | ✅           | ✅             |             |            |              |             |
-| **v0.5 – Player Interactions & UI**                                |              | ✅             | ✅          | ✅         |              |             |
-| HUD for soil health                                                |              | ✅             | ✅          | ✅         |              |             |
-| HUD for crop depletion/replenishment                               |              | ✅             | ✅          | ✅         |              |             |
-| Menu for known data                                                |              | ✅             |             | ✅         |              |             |
-| Menu for current map data                                          |              | ✅             |             | ✅         |              |             |
-| Integration with Better Game Menu                                  |              |                |              | ✅         |              | ✅         |
-| **v0.6 – Configurability & Code Quality**                          | ✅           | ✅             |             |             |              |            |
-| Additional and adjustable number of soil variables                 | ✅           | ✅             |             |             |              |            |
-| Config file, GMCM support                                          |              | ✅             |              | ✅         |              | ✅         |
-| i18n support                                                       |              |                |              | ✅         |              | ✅         |
-| Tractor mod compatibility                                          |              | ✅             |              |            |              | ✅         |
-| **v0.8 – Lore Integration**                                        |              |                |              | ✅         | ✅           | ✅         |
-| Demetrius mail & events                                            |              |                |              |            | ✅           | ✅         |
-| Farming-related character events                                   |              |                |              |            | ✅           | ✅         |
-| ConversationTopics                                                 |              | ✅             |              |            | ✅           |            |
+| Roadmap Version & Feature                           | Domain Layer | Services Layer | Objects Layer | UI Layer   | Events Layer | ModEntry    |
+|-----------------------------------------------------|--------------|----------------|---------------|------------|--------------|-------------|
+| **v0.1 – Getting Started and Foundations**          | ✅           | ✅             |              |            |               | ✅         |
+| Crop & soil data structures                         | ✅           |                |               |            |              |             |
+| Initialization states                               | ✅           |                |               |            |              |             |
+| Crop property depletion rates                       | ✅           |                |               |            |              |             |
+| Update growing crop properties.                     | ✅           |                |               |            |              |             |
+| Crop/soil data save/load                            |              | ✅             |               |            |              | ✅         |
+| SMAPI console logging                               |              | ✅             |               |            |              | ✅         |
+| **v0.2 - Clear Definitions and Advanced Mechanics** | ✅           |                |               |            |              |             |
+| Config file, GMCM support                           |              | ✅             |               | ✅         |              | ✅         |
+| i18n support                                        |              |                |               | ✅         |              | ✅         |
+| Adjustable number of soil properties.               | ✅           | ✅             |               |             |              |            |
+| Randomized distributions per save                   | ✅           |✅              |               |             |             |             |
+| Adjust yields and quality  on harvest.              | ✅           |                |               |            |              |             |
+| Harmony patch Crops.harvest                         |              | ✅             |                |            |               | ✅
+| Integrate onto game triggers                        |              | ✅             |               |            |              | ✅         |
+| Custom tool/object to measure soil/crop health      |              | ✅             | ✅           |            |              |             |
+| Custom objects to improve soil quality              |              | ✅             | ✅           |            |              | ✅          |
+| **v0.3 – Balancing and Edge Cases**                 | ✅           | ✅             | ✅           |            |              | ✅          |
+| Test methods                                        |              |                |               |            |              |              |
+| Script to analyze modded crop data                  |              |                |               |            |              |             |
+| Balance formulas in various game mechanics          | ✅           |                |               |            |              |             |
+| Giant crop compatibility.                           |              | ✅              |              |            |              |            |
+| Context-tag-based support                           | ✅           | ✅             |              |            |              |             |
+| Edge-case object support                            | ✅           | ✅             |              |            |              |             |
+| Discourage farming on non-farm maps                 |              | ✅             |               |            |              | ✅         |
+| Save-versioning                                     |              | ✅             |               |             |             |             |
+| **v0.4 – Player Interactions & UI**                 |              | ✅             | ✅           | ✅         |              |             |
+| HUD for soil health                                 |              | ✅             | ✅           | ✅         |              |             |
+| HUD for crop depletion/replenishment                |              | ✅             | ✅           | ✅         |              |             |
+| Menu for known data                                 |              | ✅             |              | ✅         |              |             |
+| Menu for current map data                           |              | ✅             |              | ✅         |              |             |
+| Integration with Better Game Menu                   |              |                |               | ✅         |              | ✅         |
+| **v0.7 – Lore Integration**                         |              |                |               | ✅         | ✅           | ✅         |
+| Demetrius mail                                      |              |                |               |            | ✅           | ✅         |
+| Demetrius events                                    |              |                |               |            | ✅           | ✅         |
+| Farming-related character events                    |              |                |               |            | ✅           | ✅         |
+| ConversationTopics                                  |              | ✅             |               |            | ✅           |            |
 
 ✅ = Primary layer where the feature is implemented
 
@@ -103,11 +109,12 @@ Project Structure:
   src/
     Domain/
     Services/
+    UI/
     Objects/
     Tools/
-    UI/
     Events/
     ModEntry.cs
+    ModConfigs.cs
   assets/
   docs/
   tests/
@@ -212,7 +219,8 @@ graph TD
 - [x] Add configuration file with Generic Mod Config Menu (GMCM) support for adjustable mechanics.
 - [x] Implement infrastructure for persistent per-save but randomized distribution formulas for various mechanics.
 - [x] Update code logic allowing for dynamic number of soil properties.
-- [ ] Logic to adjust yields and quality based on crop health on harvest.
+- [ ] Define logic to adjust yields and quality based on crop health on harvest.
+- [x] Harmony patch StardewValley.Crops.harvest to adjust quality.
 - [ ] Define logic for customized objects that undo soil depletion.
 - [ ] Introduce custom player tools for measuring soil and crop health.
 - [ ] Add internationalization (i18n) support.
@@ -331,16 +339,16 @@ graph TD
 | Term                     | Definition                                                                                                       |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **SMAPI**                | *Stardew Modding API*, the main modding framework for Stardew Valley, providing hooks into game events and code. |
-| **Mod**                  | Short for *modification*. A package of custom code, assets, or data that alters or extends the base game’s behavior without modifying the original game files directly. In Stardew Valley, mods are typically loaded by SMAPI.                   |
-| **Content Patcher (CP)** | A modding framework that lets other mods change or add assets and data to the game via JSON instead of C#.          |
-| **Event Trigger**        | A state or moment in game (e.g., `DayStarted`, `CropHarvested`) that SMAPI exposes for mod logic to run.                 |
-| **Save Data**            | Game or mod state stored between sessions, usually as JSON in Stardew modding.                            |
+| **Mod**                  | Short for *modification*. A package of custom code, assets, or data that alters or extends the base game’s behavior without modifying the original game files directly. In Stardew Valley, mods are typically loaded by SMAPI.                                           |
+| **Content Patcher (CP)** | A modding framework that lets other mods change or add assets and data to the game via JSON instead of C#.       |
+| **Event Trigger**        | A state or moment in game (e.g., `DayStarted`, `CropHarvested`) that SMAPI exposes for mod logic to run.         |
+| **Save Data**            | Game or mod state stored between sessions, usually as JSON in Stardew modding.                                   |
 | **Context Tags**         | Metadata tags attached to game content entries (e.g., crops, objects). Through Content Patcher and SMAPI, mods can use these tags to apply conditional changes or logic.   |
 | **i18n**                 | A format mods use to provide ease of translations.                                                               | 
-|**moddata**               | Custom data made and used by a mod. Can be saved or loaded through SMAPI |
+|**moddata**               | Custom data made and used by a mod. Can be saved or loaded through SMAPI                                         |
 | **Harmony**              | A library for patching, replacing and decorating .NET methods during runtime.
-| **transpiler**           | A program used to convert a programming language to another. In the case of this project, C# is converted into CIL before compilation.
-| **transpiler patching**   | 
+| **transpiler**           | A program used to convert a programming language to another. In the case of this project, C# is converted into CIL before compilation.                                                                                                                                 |
+| **transpiler patching**  | Inserting, removing, or modifying code after it has been run through the transpiler.                             |
 
 ---
 
