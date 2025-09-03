@@ -5,6 +5,33 @@
 **Project Status:** In Progress, v0.2.0alpha
 
 ---
+# Table of Contents
+          
+1. [Overview](#1-overview)  
+   - [Project Overview](#project-overview)
+   - [Motivation](#motivation)
+   - [Design Philosophy](#design-philosophy)
+   - [Scope](#scope)
+2. [Key Features](#2-key-features)  
+3. [Architecture](#3-architecture) 
+    - [Future Architectural Considerations](#future-architectural-considerations)
+    - [Dependency Diagram](#dependency-diagram)
+4. [Game/Tech Integration](#4-gametech-integration) 
+5. [Planned Roadmap](#planned-roadmap)  
+    - [v0.1 – Getting Started and Foundations](v01--getting-started-and-foundations)
+    - [v0.2 - Clear Definitions and Advanced Mechanics](#v02---clear-definitions-and-advanced-mechanics)
+    - [v0.3 – Balancing and Edge Cases](#v03--balancing-and-edge-cases)
+    - [v0.4 - Player Interactions and User Interfaces](#v04---player-interactions-and-user-interfaces)
+    - [v0.5 Multiplayer Support and Compatibility](#v05-multiplayer-support-and-compatibility)
+    - [v0.6 - Beta Test 1](#v06---beta-test-1)
+    - [v0.7 - Lore Integration](#v07---lore-integration)
+    - [v0.8 - Beta Test 2](#v08---beta-test-2)
+    - [v1.0 - Release](#v10---release)
+6. [Design Decisions and Trade-offs](#6-design-decisions-and-trade-offs)  
+7. [Glossary](#7-glossary)  
+8. [References](#8-references)  
+
+---
 
 ## 1. Overview
 
@@ -58,43 +85,43 @@ The philosophy is to **blend realism with game balance**:
 
 | Roadmap Version & Feature                           | Domain Layer | Services Layer | Objects Layer | UI Layer   | Events Layer | ModEntry    |
 |-----------------------------------------------------|--------------|----------------|---------------|------------|--------------|-------------|
-| **v0.1 – Getting Started and Foundations**          | ✅           | ✅             |              |            |               | ✅         |
+| **v0.1 – Getting Started and Foundations**          | ✅           | ✅             |              |            |               |            |
 | Crop & soil data structures                         | ✅           |                |               |            |              |             |
 | Initialization states                               | ✅           |                |               |            |              |             |
 | Crop property depletion rates                       | ✅           |                |               |            |              |             |
 | Update growing crop properties.                     | ✅           |                |               |            |              |             |
 | Crop/soil data save/load                            |              | ✅             |               |            |              | ✅         |
 | SMAPI console logging                               |              | ✅             |               |            |              | ✅         |
-| **v0.2 - Clear Definitions and Advanced Mechanics** | ✅           |                |               |            |              |             |
-| Config file, GMCM support                           |              | ✅             |               | ✅         |              | ✅         |
-| i18n support                                        |              |                |               | ✅         |              | ✅         |
-| Adjustable number of soil properties.               | ✅           | ✅             |               |             |              |            |
-| Randomized distributions per save                   | ✅           |✅              |               |             |             |             |
+| **v0.2 - Clear Definitions and Advanced Mechanics** | ✅           | ✅             | ✅           |            |              | ✅          |
+| Config file, GMCM support                           |              | ✅             |               |            |              | ✅         |
+| i18n support                                        |              |                |               |            |              | ✅          |
+| Adjustable number of soil properties.               | ✅           | ✅             |               |            |              |            |
+| Randomized distributions per save                   | ✅           | ✅             |               |            |             |             |
 | Adjust yields and quality  on harvest.              | ✅           |                |               |            |              |             |
-| Harmony patch Crops.harvest                         |              | ✅             |                |            |               | ✅
+| Harmony patch Crops.harvest                         |              | ✅             |                |           |              | ✅         |
 | Integrate onto game triggers                        |              | ✅             |               |            |              | ✅         |
-| Custom tool/object to measure soil/crop health      |              | ✅             | ✅           |            |              |             |
+| Custom tool/object to measure soil/crop health      |              | ✅             | ✅           |            |              | ✅          |
 | Custom objects to improve soil quality              |              | ✅             | ✅           |            |              | ✅          |
-| **v0.3 – Balancing and Edge Cases**                 | ✅           | ✅             | ✅           |            |              | ✅          |
-| Test methods                                        |              |                |               |            |              |              |
+| **v0.3 – Balancing and Edge Cases**                 | ✅           | ✅             |              |            |              | ✅          |
+| Test methods                                        |              |                |               |            |              |             |
 | Script to analyze modded crop data                  |              |                |               |            |              |             |
 | Balance formulas in various game mechanics          | ✅           |                |               |            |              |             |
-| Giant crop compatibility.                           |              | ✅              |              |            |              |            |
+| Giant crop compatibility.                           |              | ✅              |              |            |              |             |
 | Context-tag-based support                           | ✅           | ✅             |              |            |              |             |
 | Edge-case object support                            | ✅           | ✅             |              |            |              |             |
 | Discourage farming on non-farm maps                 |              | ✅             |               |            |              | ✅         |
-| Save-versioning                                     |              | ✅             |               |             |             |             |
-| **v0.4 – Player Interactions & UI**                 |              | ✅             | ✅           | ✅         |              |             |
+| Save-versioning                                     |              | ✅             |               |            |             | ✅          |
+| **v0.4 – Player Interactions & UI**                 |              | ✅             | ✅           | ✅         |              | ✅          |
 | HUD for soil health                                 |              | ✅             | ✅           | ✅         |              |             |
 | HUD for crop depletion/replenishment                |              | ✅             | ✅           | ✅         |              |             |
 | Menu for known data                                 |              | ✅             |              | ✅         |              |             |
 | Menu for current map data                           |              | ✅             |              | ✅         |              |             |
 | Integration with Better Game Menu                   |              |                |               | ✅         |              | ✅         |
-| **v0.7 – Lore Integration**                         |              |                |               | ✅         | ✅           | ✅         |
+| **v0.7 – Lore Integration**                         |              |                |               |            | ✅           | ✅         |
 | Demetrius mail                                      |              |                |               |            | ✅           | ✅         |
 | Demetrius events                                    |              |                |               |            | ✅           | ✅         |
 | Farming-related character events                    |              |                |               |            | ✅           | ✅         |
-| ConversationTopics                                  |              | ✅             |               |            | ✅           |            |
+| ConversationTopics                                  |              |                |               |            | ✅           | ✅         |
 
 ✅ = Primary layer where the feature is implemented
 
@@ -353,10 +380,12 @@ graph TD
 ---
 
 ## 8. References
-- API Reference: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs
-- Beginner's Guide: https://stardewvalleywiki.com/Modding:Modder_Guide/Get_Started
-- Saving and retrieving data: https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Data
-- Harmony Patching & Transpilers: https://stardewmodding.wiki.gg/wiki/Tutorial:_Harmony_Patching#Transpilers
-- Stardew Valley decompiled code (via ILSpy)
-- Stardew Valley Wiki: https://stardewvalleywiki.com/Stardew_Valley_Wiki
-- Configuration file: https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors
+
+1. Stardew Valley Modding API Reference – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs)  
+2. Beginner’s Guide to Modding – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/Get_Started)  
+3. Saving and Retrieving Data – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Data)  
+4. Harmony Patching & Transpilers Tutorial – [Stardew Modding Wiki](https://stardewmodding.wiki.gg/wiki/Tutorial:_Harmony_Patching#Transpilers)  
+5. Harmony Library Documentation – [harmony.pardeike.net](https://harmony.pardeike.net/articles/intro.html)  
+6. Stardew Valley Decompiled Code – Decompiled via ILSpy (for research purposes)  
+7. Stardew Valley Wiki (General Reference) – [Stardew Valley Wiki](https://stardewvalleywiki.com/Stardew_Valley_Wiki)  
+8. Generic Mod Config Menu (GMCM) – [GitHub Repository](https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors)  
