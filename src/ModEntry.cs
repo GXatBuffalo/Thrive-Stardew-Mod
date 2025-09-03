@@ -10,7 +10,7 @@ namespace Thrive.src
 	{
 		public FarmingHandler F_Handler { get; set; }
 		private ModConfig Config;
-		
+
 		private void OnDayStarted(object? sender, DayStartedEventArgs e)
 		{
 			if (F_Handler == null) // initialize once
@@ -34,16 +34,18 @@ namespace Thrive.src
 			SetConfigMenu(sender, e);
 		}
 
-		private void HarmonyPatching(){
+		private void HarmonyPatching()
+		{
 			var harmony = new Harmony(this.ModManifest.UniqueID);
 
 			harmony.Patch(
 				 original: AccessTools.Method(typeof(StardewValley.Crop), nameof(Crop.harvest)),
-				 transpiler: new HarmonyMethod(typeof(HarmonyHarvest), nameof(HarmonyHarvest.AddProperties_Transpiler))
+				 transpiler: new HarmonyMethod(typeof(CropQuality_HarmonyPatch), nameof(CropQuality_HarmonyPatch.Harvest_Transpiler))
 			);
 		}
 
-		private void SetConfigMenu(object? sender, GameLaunchedEventArgs e) {
+		private void SetConfigMenu(object? sender, GameLaunchedEventArgs e)
+		{
 			// get Generic Mod Config Menu's API (if it's installed)
 			var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
 			if (configMenu is null)

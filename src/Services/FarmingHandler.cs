@@ -76,6 +76,12 @@ namespace Thrive.src.Services
 			}
 		}
 
+		public static int newCropQuality(StardewValley.Object o, int x, int y){
+			return 1;
+		}
+
+
+
 		/*
 		public void TestSetAllCropData()
 		{
