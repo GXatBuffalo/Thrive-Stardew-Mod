@@ -22,17 +22,17 @@ namespace Thrive.src.Services
 			Monitor = monitor;
 		}
 
-		public static IEnumerable<CodeInstruction> Harvest_Transpiler(IEnumerable<CodeInstruction> instructions)
+		public static IEnumerable<CodeInstruction> HarvestForage_Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			CodeMatcher matcher = new(instructions);
 			MethodInfo farmerProfessionsInfo = AccessTools.PropertyGetter(typeof(StardewValley.Farmer), nameof(StardewValley.Farmer.professions));
-			MethodInfo myCropQualityInfo = AccessTools.PropertyGetter(typeof(int), nameof(FarmingHandler.newCropQuality));
+			MethodInfo myCropQualityInfo = AccessTools.PropertyGetter(typeof(int), nameof(FarmingHandler.newForageQuality));
 			MethodInfo addPropertiesInfo = AccessTools.PropertyGetter(typeof(string), nameof(AddProperties));
 
 			matcher.MatchStartForward(
 				new CodeMatch(OpCodes.Ldfld, farmerProfessionsInfo)
 				)
-				.ThrowIfNotMatch($"Could not find entry point for {nameof(Harvest_Transpiler)}")
+				.ThrowIfNotMatch($"Could not find entry point for {nameof(HarvestForage_Transpiler)}")
 				.RemoveInstructionsWithOffsets(-1, 32)
 				.Insert(
 					new CodeInstruction(OpCodes.Call, myCropQualityInfo),
@@ -42,7 +42,26 @@ namespace Thrive.src.Services
 			return matcher.InstructionEnumeration();
 		}
 
-		public static void MyCropQuality(StardewValley.Object o, int xTile, int yTile)
+		public static IEnumerable<CodeInstruction> HarvestCrop_Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			CodeMatcher matcher = new(instructions);
+			MethodInfo myCropQualityInfo = AccessTools.PropertyGetter(typeof(int), nameof(FarmingHandler.newCropQuality));
+			MethodInfo addPropertiesInfo = AccessTools.PropertyGetter(typeof(string), nameof(AddProperties));
+
+			matcher.MatchStartForward(
+				new CodeMatch(OpCodes.Stloc, 14)
+				)
+				.ThrowIfNotMatch($"Could not find entry point for {nameof(HarvestCrop_Transpiler)}")
+				.RemoveInstructionsWithOffsets(-1, 49)
+				.Insert(
+					new CodeInstruction(OpCodes.Call, myCropQualityInfo),
+					new CodeInstruction(OpCodes.Call, addPropertiesInfo)
+				);
+
+			return matcher.InstructionEnumeration();
+		}
+
+		public static void MyForageQuality(StardewValley.Object o, int xTile, int yTile)
 		{
 			o.Quality = FarmingHandler.newCropQuality(o, xTile, yTile);
 		}

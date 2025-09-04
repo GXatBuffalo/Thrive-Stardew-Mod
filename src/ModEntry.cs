@@ -40,8 +40,14 @@ namespace Thrive.src
 
 			harmony.Patch(
 				 original: AccessTools.Method(typeof(StardewValley.Crop), nameof(Crop.harvest)),
-				 transpiler: new HarmonyMethod(typeof(CropQuality_HarmonyPatch), nameof(CropQuality_HarmonyPatch.Harvest_Transpiler))
+				 transpiler: new HarmonyMethod(typeof(CropQuality_HarmonyPatch), nameof(CropQuality_HarmonyPatch.HarvestForage_Transpiler))
 			);
+
+			harmony.Patch(
+				 original: AccessTools.Method(typeof(StardewValley.Crop), nameof(Crop.harvest)),
+				 transpiler: new HarmonyMethod(typeof(CropQuality_HarmonyPatch), nameof(CropQuality_HarmonyPatch.HarvestCrop_Transpiler))
+			);
+
 		}
 
 		private void SetConfigMenu(object? sender, GameLaunchedEventArgs e)

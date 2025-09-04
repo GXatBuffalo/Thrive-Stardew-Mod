@@ -80,6 +80,10 @@ namespace Thrive.src.Services
 			return 1;
 		}
 
+		public static int newForageQuality(StardewValley.Object o, int x, int y)
+		{
+			return 1;
+		}
 
 
 		/*
