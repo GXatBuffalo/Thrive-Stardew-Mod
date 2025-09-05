@@ -7,6 +7,7 @@ using StardewValley.GameData.Crops;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
+using System.Numerics;
 using Thrive.src;
 using Thrive.src.Domain;
 
@@ -21,7 +22,8 @@ namespace Thrive.src.Services
 		public int nutriMin = 0;
 		public int nutriMax = 1000;
 		public NutritionMap CurrentMap { get; private set; } = new NutritionMap(0, 0, 0);
-		public string? CurrentKey { get; private set; } 
+		public string? CurrentKey { get; private set; }
+		bool curMapSaved { get; set; } = false;
 		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; } = new Dictionary<string, Domain.CropData>();
 		private List<Formulas.CropRequirementFormula> FormulaList { get; set; }
 
@@ -30,14 +32,18 @@ namespace Thrive.src.Services
 			Monitor = monitor;
 			gameHandler = helper;
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			FormulaList = Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
+			FormulaList = InitializeFormulas();
 		}
 
-		//remember to run and save somewhere if formulas is null
-		public void InitializeFormulas(){
+		public List<Formulas.CropRequirementFormula> InitializeFormulas(){
+			int soilPropertiesCount = gameHandler.ReadConfig<ModConfig>().SoilNutritionCount;
 			List<Formulas.CropRequirementFormula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.CropRequirementFormula>>("Thrive.FormulaList");
-			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			TempFormulaList = Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(5).ToList();
+			if (TempFormulaList == null || soilPropertiesCount <= TempFormulaList.Count)
+			{
+				Random rand = new Random((int)Game1.uniqueIDForThisGame);
+				return Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
+			}
+			return TempFormulaList;
 		}
 
 		public void StartMap()
@@ -61,6 +67,27 @@ namespace Thrive.src.Services
 			gameHandler.Data.WriteSaveData(CurrentKey, CurrentMap);
 		}
 
+		// run when LocationChanged
+		public void SetCurrentMap(){
+			if(curMapSaved == false){
+				SaveCurrentMap();
+				curMapSaved = true;
+			}
+			if(Game1.currentLocation.Name.ToLower().Contains("farm")){
+				if (Game1.currentLocation.Name == CurrentKey)
+				{
+					return;
+				}
+				CurrentKey = Game1.currentLocation.Name;
+				var tempMap = gameHandler.Data.ReadSaveData<NutritionMap>(CurrentKey);
+				if (tempMap != null) {
+					LoadCurrentMap();
+				} else {
+					StartMap();
+				}
+			}
+		}
+
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
 		public void UpdateSoilAndCropHealth(SoilNutrition sn, Domain.CropData cd)
 		{
@@ -77,6 +104,7 @@ namespace Thrive.src.Services
 		}
 
 		public static int newCropQuality(StardewValley.Object o, int x, int y){
+			
 			return 1;
 		}
 

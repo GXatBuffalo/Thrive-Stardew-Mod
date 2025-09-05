@@ -26,7 +26,11 @@ namespace Thrive.src
 			this.Config = this.Helper.ReadConfig<ModConfig>();
 			helper.Events.GameLoop.GameLaunched += OnGameLaunched;
 			helper.Events.GameLoop.DayStarted += OnDayStarted;
+			helper.Events.Player.Warped += OnPlayerWarp;
+		}
 
+		private void OnPlayerWarp(object? sender, WarpedEventArgs e){
+			F_Handler.SetCurrentMap();
 		}
 
 		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
