@@ -1,14 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Extensions;
-using StardewValley.GameData.Crops;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
-using System.Collections.Generic;
-using System.Numerics;
-using Thrive.src;
 using Thrive.src.Domain;
 
 namespace Thrive.src.Services
