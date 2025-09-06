@@ -1,7 +1,7 @@
 ﻿# Thrive: A Stardew Valley Mod – Design Document
 
 **Author:** SomebodyUnown 
-**Last Updated:** 2025-08-27
+**Last Updated:** 2025-09-05
 **Project Status:** In Progress, v0.2.0alpha
 
 ---
@@ -18,7 +18,7 @@
     - [Dependency Diagram](#dependency-diagram)
 4. [Game/Tech Integration](#4-gametech-integration) 
 5. [Planned Roadmap](#planned-roadmap)  
-    - [v0.1 – Getting Started and Foundations](v01--getting-started-and-foundations)
+    - [v0.1 – Getting Started and Foundations](#v01--getting-started-and-foundations)
     - [v0.2 - Clear Definitions and Advanced Mechanics](#v02---clear-definitions-and-advanced-mechanics)
     - [v0.3 – Balancing and Edge Cases](#v03--balancing-and-edge-cases)
     - [v0.4 - Player Interactions and User Interfaces](#v04---player-interactions-and-user-interfaces)
@@ -67,9 +67,9 @@ The philosophy is to **blend realism with game balance**:
 
 ## 2. Key Features
 
-- **Soil Health System** – Track and manage soil nutrition levels that change over time based on crops planted and fertilizers used.
+- **Soil Health System** – Track and manage additional soil properties that change over time based on crops planted and fertilizers used.
 - **Dynamic Crop Effects** – Different crops replenish or deplete soil nutrients in differing quantities, affecting future yields.
-- **Nutrition Mechanics** – Extend gameplay depth by introducing nutrition values for harvested crops, with planned future integration into character well-being.
+- **Additional Soil Properties** – Extend gameplay depth by introducing additional values for soil and harvested crops, with planned future integration into character well-being.
 - **Sustainability Incentives** – Balance short-term profits with long-term farm health to avoid soil degradation and reduced productivity.
 - **Tool Integration** – Custom in-game tools (e.g., Soil/Crop Analyzer) for checking soil and crop data.
 - **Event Integration** – In-game events that introduce mod mechanics, encourage sustainable farming practices, and provide the player with the in-game tools.
@@ -110,7 +110,7 @@ The philosophy is to **blend realism with game balance**:
 | Context-tag-based support                           | ✅           | ✅             |              |            |              |             |
 | Edge-case object support                            | ✅           | ✅             |              |            |              |             |
 | Discourage farming on non-farm maps                 |              | ✅             |               |            |              | ✅         |
-| Save-versioning                                     |              | ✅             |               |            |             | ✅          |
+| Save-versioning                                     |              | ✅             |               |            |              | ✅         |
 | **v0.4 – Player Interactions & UI**                 |              | ✅             | ✅           | ✅         |              | ✅          |
 | HUD for soil health                                 |              | ✅             | ✅           | ✅         |              |             |
 | HUD for crop depletion/replenishment                |              | ✅             | ✅           | ✅         |              |             |
@@ -123,12 +123,12 @@ The philosophy is to **blend realism with game balance**:
 | Farming-related character events                    |              |                |               |            | ✅           | ✅         |
 | ConversationTopics                                  |              |                |               |            | ✅           | ✅         |
 
-✅ = Primary layer where the feature is implemented
+✅ = Layer where the features are implemented
 
 
 ---
 
-## Future Architectural Considerations
+## Architectural Considerations
 
 ### 1. Domain-Driven, Service-Based Structure
 The architecture follows a **domain-driven** approach, separating core logic (Domain layer) from orchestration (Services) and UI or Event concerns.  

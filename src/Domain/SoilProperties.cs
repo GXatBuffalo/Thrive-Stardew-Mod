@@ -5,21 +5,21 @@ using System.Collections.Generic;
 
 namespace Thrive.src.Domain
 {
-	public class SoilNutrition
+	public class SoilProperties
 	{
 		public string CropID { get; set; }
 		public List<double> SoilStats { get; set; }
 		public List<int> Health { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
 
-		public SoilNutrition(string id, Random rand, int nutriCount, int x, int y, Formulas.SoilInitializationFormulas appliedFormula)
+		public SoilProperties(string id, Random rand, int propertyCount, int x, int y, Formulas.SoilInitializationFormulas appliedFormula)
 		{
 			CropID = id;
-			InitializeSoil(rand, nutriCount, x, y, appliedFormula);
+			InitializeSoil(rand, propertyCount, x, y, appliedFormula);
 		}
 
-		public void InitializeSoil(Random rand, int nutriCount, int x, int y, Formulas.SoilInitializationFormulas appliedFormula)
+		public void InitializeSoil(Random rand, int propertyCount, int x, int y, Formulas.SoilInitializationFormulas appliedFormula)
 		{
-			for (int i = 0; i < nutriCount; i++)
+			for (int i = 0; i < propertyCount; i++)
 			{
 				SoilStats[i] = appliedFormula(rand, x, y, i);
 			}

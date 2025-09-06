@@ -10,7 +10,7 @@ namespace Thrive.src
 {
 	public sealed class ModConfig
 	{
-		public int SoilNutritionCount { get; set; } = 3;
+		public int SoilPropertyCount { get; set; } = 3;
 
 		public double VegetableCategoryMultiplier { get; set; } = 0.95;
 		public double FruitsCategoryMultiplier { get; set; } = 1.05;
@@ -19,6 +19,8 @@ namespace Thrive.src
 
 		public double GrowthDepletionMultiplier { get; set; } = 1.0;
 		public double RestrictionMultiplier { get; set; } = 1.0;
+
+		public bool IHaveRAM { get; set; } = false;
 	}
 
 	// https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors

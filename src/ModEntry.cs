@@ -29,8 +29,9 @@ namespace Thrive.src
 			helper.Events.Player.Warped += OnPlayerWarp;
 		}
 
-		private void OnPlayerWarp(object? sender, WarpedEventArgs e){
-			F_Handler.SetCurrentMap();
+		private void OnPlayerWarp(object? sender, WarpedEventArgs e)
+		{
+				F_Handler.SetCurrentMap();
 		}
 
 		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -138,13 +139,21 @@ namespace Thrive.src
 
 			configMenu.AddNumberOption(
 					mod: this.ModManifest,
-					getValue: () => this.Config.SoilNutritionCount,
-					setValue: value => this.Config.SoilNutritionCount = value,
-					name: () => "Nutrition Property Count",
+					getValue: () => this.Config.SoilPropertyCount,
+					setValue: value => this.Config.SoilPropertyCount = value,
+					name: () => "Soil Property Count",
 					tooltip: () => "Number of addtional soil properties to use (iridium and mana always on by default).",
 					min: 1,
 					max: 5,
 					interval: 1
+			);
+
+			configMenu.AddBoolOption(
+				mod: this.ModManifest,
+				getValue: () => this.Config.IHaveRAM,
+				setValue: value => this.Config.IHaveRAM = value,
+				name: () => "I have RAM.",
+				tooltip: () => "I have RAM, load all my maps to memory."
 			);
 		}
 	}

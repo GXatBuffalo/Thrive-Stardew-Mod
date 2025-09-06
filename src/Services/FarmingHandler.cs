@@ -19,13 +19,15 @@ namespace Thrive.src.Services
 		public IModHelper gameHandler { get; }
 
 		public List<string> SoilNutrientNames { get; set; } = new List<string> { "Nitro", "Phos", "Aera", "pH", "Microbes" };
-		public int nutriMin = 0;
-		public int nutriMax = 1000;
-		public NutritionMap CurrentMap { get; private set; } = new NutritionMap(0, 0, 0);
-		public string? CurrentKey { get; private set; }
+		public int propertyMin = 0;
+		public int propertyMax = 1000;
+		public SoilPropertiesMap CurrentMap { get; private set; } = new SoilPropertiesMap(0, 0, 0);
+		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; } = new();
+		public string? CurrentMapKey { get; private set; }
 		bool curMapSaved { get; set; } = false;
 		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; } = new Dictionary<string, Domain.CropData>();
 		private List<Formulas.CropRequirementFormula> FormulaList { get; set; }
+		
 
 		public FarmingHandler(IModHelper helper, IMonitor monitor)
 		{
@@ -36,7 +38,7 @@ namespace Thrive.src.Services
 		}
 
 		public List<Formulas.CropRequirementFormula> InitializeFormulas(){
-			int soilPropertiesCount = gameHandler.ReadConfig<ModConfig>().SoilNutritionCount;
+			int soilPropertiesCount = gameHandler.ReadConfig<ModConfig>().SoilPropertyCount;
 			List<Formulas.CropRequirementFormula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.CropRequirementFormula>>("Thrive.FormulaList");
 			if (TempFormulaList == null || soilPropertiesCount <= TempFormulaList.Count)
 			{
@@ -46,53 +48,61 @@ namespace Thrive.src.Services
 			return TempFormulaList;
 		}
 
-		public void StartMap()
+		public SoilPropertiesMap StartMap()
 		{
 			int width = Game1.currentLocation.Map.Layers[0].LayerWidth;
 			int height = Game1.currentLocation.Map.Layers[0].LayerHeight;
 			Random rand = new Random();
 			// 10-30 is beginning mana, remember to rebalance
-			CurrentMap = new NutritionMap(width, height, rand.Next(10, 30));
-			CurrentKey = Game1.currentLocation.Name;
+			return new SoilPropertiesMap(width, height, rand.Next(10, 30));
 		}
 
 		public void LoadCurrentMap()
 		{
-			CurrentKey = Game1.currentLocation.Name;
-			CurrentMap = gameHandler.Data.ReadSaveData<NutritionMap>(CurrentKey);
+			CurrentMapKey = Game1.currentLocation.Name;
+			CurrentMap = gameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
 		}
 
 		public void SaveCurrentMap()
 		{
-			gameHandler.Data.WriteSaveData(CurrentKey, CurrentMap);
+			gameHandler.Data.WriteSaveData(CurrentMapKey, CurrentMap);
 		}
 
-		// run when LocationChanged
+		// run when LocationChanged and when config.IHAVERAM is false
 		public void SetCurrentMap(){
 			if(curMapSaved == false){
 				SaveCurrentMap();
 				curMapSaved = true;
 			}
 			if(Game1.currentLocation.Name.ToLower().Contains("farm")){
-				if (Game1.currentLocation.Name == CurrentKey)
+				if (Game1.currentLocation.Name == CurrentMapKey)
 				{
 					return;
 				}
-				CurrentKey = Game1.currentLocation.Name;
-				var tempMap = gameHandler.Data.ReadSaveData<NutritionMap>(CurrentKey);
-				if (tempMap != null) {
-					LoadCurrentMap();
-				} else {
-					StartMap();
+				CurrentMapKey = Game1.currentLocation.Name;
+				if(!gameHandler.ReadConfig<ModConfig>().IHaveRAM){ 
+					var tempMap = gameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
+					if (tempMap != null) {
+						LoadCurrentMap();
+					} else {
+						CurrentMap = StartMap();
+					}
+				}else{
+					SoilPropertiesMap tempMap = AllMaps[CurrentMapKey];
+					if (tempMap == null)
+					{
+						AllMaps[CurrentMapKey] = StartMap();
+					}
 				}
+					curMapSaved = false;
 			}
 		}
 
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
-		public void UpdateSoilAndCropHealth(SoilNutrition sn, Domain.CropData cd)
+		public void UpdateSoilAndCropHealth(SoilProperties sn, Domain.CropData cd)
 		{
 			var configs = gameHandler.ReadConfig<ModConfig>();
-			for (int x = 0; x < configs.SoilNutritionCount+2; x++)
+			for (int x = 0; x < configs.SoilPropertyCount+2; x++)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
 					sn.Health[x] += 10;
@@ -112,7 +122,6 @@ namespace Thrive.src.Services
 		{
 			return 1;
 		}
-
 
 		/*
 		public void TestSetAllCropData()
