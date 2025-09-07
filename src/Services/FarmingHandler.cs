@@ -17,26 +17,25 @@ namespace Thrive.src.Services
 		public string? CurrentMapKey { get; private set; }
 		bool curMapSaved { get; set; } = false;
 		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; } = new Dictionary<string, Domain.CropData>();
-		private List<Formulas.CropRequirementFormula> FormulaList { get; set; }
-		
+		public List<Formulas.CropRequirementFormula> CropReqFormulaList { get; set; }
+		public List<Formulas.CropDepreciationFormula> CropDepFormulaList { get; set; }
+		public List<Formulas.SoilInitializationFormulas> SoilInitFormulaList { get; set; }
 
 		public FarmingHandler(IModHelper helper, IMonitor monitor)
 		{
 			Monitor = monitor;
 			gameHandler = helper;
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			FormulaList = InitializeFormulas();
+			InitializeFormulas();
 		}
 
-		public List<Formulas.CropRequirementFormula> InitializeFormulas(){
+		public void InitializeFormulas()
+		{
 			int soilPropertiesCount = gameHandler.ReadConfig<ModConfig>().SoilPropertyCount;
-			List<Formulas.CropRequirementFormula> TempFormulaList = gameHandler.Data.ReadSaveData<List<Formulas.CropRequirementFormula>>("Thrive.FormulaList");
-			if (TempFormulaList == null || soilPropertiesCount <= TempFormulaList.Count)
-			{
-				Random rand = new Random((int)Game1.uniqueIDForThisGame);
-				return Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
-			}
-			return TempFormulaList;
+			Random rand = new Random((int)Game1.uniqueIDForThisGame);
+			Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
+			Formulas.CropDepreFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
+			Formulas.SoilInitFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
 		}
 
 		public SoilPropertiesMap StartMap()
@@ -60,17 +59,18 @@ namespace Thrive.src.Services
 		}
 
 		// run when LocationChanged and when config.IHAVERAM is false
-		public void SetCurrentMap(){
+		public void SetCurrentMap(GameLocation oldLocation, GameLocation newLocation)
+		{
 			if(curMapSaved == false){
 				SaveCurrentMap();
 				curMapSaved = true;
 			}
-			if(Game1.currentLocation.Name.ToLower().Contains("farm")){
-				if (Game1.currentLocation.Name == CurrentMapKey)
+			if(newLocation.IsFarm || newLocation.Name.ToLower().Contains(" farm")){
+				if (newLocation.Name == CurrentMapKey)
 				{
 					return;
 				}
-				CurrentMapKey = Game1.currentLocation.Name;
+				CurrentMapKey = newLocation.Name;
 				if(!gameHandler.ReadConfig<ModConfig>().IHaveRAM){ 
 					var tempMap = gameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
 					if (tempMap != null) {
@@ -78,14 +78,14 @@ namespace Thrive.src.Services
 					} else {
 						CurrentMap = StartMap();
 					}
-				}else{
-					SoilPropertiesMap tempMap = AllMaps[CurrentMapKey];
-					if (tempMap == null)
+				}
+				else{
+					if (!AllMaps.TryGetValue(CurrentMapKey, out _))
 					{
 						AllMaps[CurrentMapKey] = StartMap();
 					}
 				}
-					curMapSaved = false;
+				curMapSaved = false;
 			}
 		}
 

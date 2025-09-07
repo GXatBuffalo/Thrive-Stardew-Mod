@@ -1,19 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using System.ComponentModel.DataAnnotations;
 
 namespace Thrive.src
 {
 	public sealed class ModConfig
 	{
-		public int SoilPropertyCount { get; set; } = 3;
+		[Range(3, 5)] public int SoilPropertyCount { get; set; } = 3;
 
 		public double VegetableCategoryMultiplier { get; set; } = 0.95;
 		public double FruitsCategoryMultiplier { get; set; } = 1.05;
 		public double FlowersCategoryMultiplier { get; set; } = 1.2;
 		public double GreensCategoryMultiplier { get; set; } = 1.4;
 
-		public double GrowthDepletionMultiplier { get; set; } = 1.0;
+		[Range(0.1, 3.0)] public double GrowthDepletionMultiplier { get; set; } = 1.0;
 		public double RestrictionMultiplier { get; set; } = 1.0;
 
 		public bool IHaveRAM { get; set; } = false;

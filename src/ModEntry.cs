@@ -11,7 +11,7 @@ namespace Thrive.src
 		public FarmingHandler F_Handler { get; set; }
 		private ModConfig Config;
 
-		private void OnDayStarted(object? sender, DayStartedEventArgs e)
+		private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
 		{
 			if (F_Handler == null) // initialize once
 			{
@@ -25,13 +25,15 @@ namespace Thrive.src
 		{
 			this.Config = this.Helper.ReadConfig<ModConfig>();
 			helper.Events.GameLoop.GameLaunched += OnGameLaunched;
-			helper.Events.GameLoop.DayStarted += OnDayStarted;
+			helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
 			helper.Events.Player.Warped += OnPlayerWarp;
 		}
 
 		private void OnPlayerWarp(object? sender, WarpedEventArgs e)
 		{
-				F_Handler.SetCurrentMap();
+			GameLocation oldLocation = e.OldLocation;
+			GameLocation newLocation = e.NewLocation;
+			F_Handler.SetCurrentMap(oldLocation, newLocation);
 		}
 
 		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)

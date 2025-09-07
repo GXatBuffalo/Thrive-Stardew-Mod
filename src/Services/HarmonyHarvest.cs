@@ -19,8 +19,8 @@ namespace Thrive.src.Services
 		{
 			CodeMatcher matcher = new(instructions);
 			MethodInfo farmerProfessionsInfo = AccessTools.PropertyGetter(typeof(StardewValley.Farmer), nameof(StardewValley.Farmer.professions));
-			MethodInfo myCropQualityInfo = AccessTools.PropertyGetter(typeof(int), nameof(FarmingHandler.newForageQuality));
-			MethodInfo addPropertiesInfo = AccessTools.PropertyGetter(typeof(string), nameof(AddProperties));
+			MethodInfo myForageQualityInfo = AccessTools.Method(typeof(FarmingHandler), nameof(FarmingHandler.newForageQuality));
+			MethodInfo addPropertiesInfo = AccessTools.Method(typeof(CropQuality_HarmonyPatch), nameof(AddProperties));
 
 			matcher.MatchStartForward(
 				new CodeMatch(OpCodes.Ldfld, farmerProfessionsInfo)
@@ -28,7 +28,7 @@ namespace Thrive.src.Services
 				.ThrowIfNotMatch($"Could not find entry point for {nameof(HarvestForage_Transpiler)}")
 				.RemoveInstructionsWithOffsets(-1, 32)
 				.Insert(
-					new CodeInstruction(OpCodes.Call, myCropQualityInfo),
+					new CodeInstruction(OpCodes.Call, myForageQualityInfo),
 					new CodeInstruction(OpCodes.Call, addPropertiesInfo)
 				);
 
@@ -38,8 +38,9 @@ namespace Thrive.src.Services
 		public static IEnumerable<CodeInstruction> HarvestCrop_Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			CodeMatcher matcher = new(instructions);
-			MethodInfo myCropQualityInfo = AccessTools.PropertyGetter(typeof(int), nameof(FarmingHandler.newCropQuality));
-			MethodInfo addPropertiesInfo = AccessTools.PropertyGetter(typeof(string), nameof(AddProperties));
+			MethodInfo myCropQualityInfo = AccessTools.Method(typeof(FarmingHandler), nameof(FarmingHandler.newCropQuality));
+			MethodInfo addPropertiesInfo = AccessTools.Method(typeof(CropQuality_HarmonyPatch), nameof(AddProperties));
+
 
 			matcher.MatchStartForward(
 				new CodeMatch(OpCodes.Stloc, 14)
