@@ -33,9 +33,9 @@ namespace Thrive.src.Services
 		{
 			int soilPropertiesCount = gameHandler.ReadConfig<ModConfig>().SoilPropertyCount;
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			Formulas.CropReqFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
-			Formulas.CropDepreFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
-			Formulas.SoilInitFormulas.OrderBy(_ => rand.Next()).Take(soilPropertiesCount).ToList();
+			CropReqFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropReqFormulas, rand, soilPropertiesCount);
+			CropDepFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropDepreFormulas, rand, soilPropertiesCount);
+			SoilInitFormulaList = Helpers.PartialFY_Shuffle(Formulas.SoilInitFormulas, rand, soilPropertiesCount);
 		}
 
 		public SoilPropertiesMap StartMap()
