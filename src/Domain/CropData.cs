@@ -1,4 +1,6 @@
 ﻿using StardewValley;
+using StardewValley.Network.NetEvents;
+using System.Reflection.Metadata;
 
 namespace Thrive.src.Domain
 {
@@ -6,7 +8,7 @@ namespace Thrive.src.Domain
 	{
 		/// NOTE: The formulas are strictly for LOGIC purposes at the current time. The numbers and formula is likely to be fiddled with before actual releases.
 
-		public List<int> Stats { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
+		public List<int> HealthStats { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
 
 		public List<double> Requirements { get; set; } = new();
 
@@ -35,6 +37,25 @@ namespace Thrive.src.Domain
 			{
 				Requirements[i*2] = reqFormulas[i](rand, price, edibility, (int)xp, growthphase);
 			}
+		}
+	
+		public int GetRandomQualityFromHealth(int soilProperties){
+			int counter = 0;
+			int average = 0;
+			for (int i = 0; i < soilProperties; i++)
+			{
+				if(HealthStats[i] >= 100)
+				{ 
+					counter++;
+					average += HealthStats[i];
+				}
+			}
+			double percent = counter / soilProperties * 4;
+			average = average/ soilProperties;
+			int flevel = Game1.player.GetSkillLevel(0);
+
+			int quality = (int)Math.Clamp(average / 25, 1, 4);
+			return quality ;
 		}
 	}
 }

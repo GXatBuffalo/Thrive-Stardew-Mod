@@ -9,13 +9,16 @@ namespace Thrive.src
 	{
 		[Range(3, 5)] public int SoilPropertyCount { get; set; } = 3;
 
-		public double VegetableCategoryMultiplier { get; set; } = 0.95;
-		public double FruitsCategoryMultiplier { get; set; } = 1.05;
-		public double FlowersCategoryMultiplier { get; set; } = 1.2;
-		public double GreensCategoryMultiplier { get; set; } = 1.4;
+		[Range(0.0, 2.0)] public double VegetableCategoryMultiplier { get; set; } = 0.95;
+		[Range(0.0, 2.0)] public double FruitsCategoryMultiplier { get; set; } = 1.05;
+		[Range(0.0, 2.0)] public double FlowersCategoryMultiplier { get; set; } = 1.2;
+		[Range(0.0, 2.0)] public double GreensCategoryMultiplier { get; set; } = 1.4;
 
 		[Range(0.1, 3.0)] public double GrowthDepletionMultiplier { get; set; } = 1.0;
-		public double RestrictionMultiplier { get; set; } = 1.0;
+		[Range(0.1, 5.0)] public double RestrictionMultiplier { get; set; } = 1.0;
+
+		[Range(-0.3, 0.3)] public double JojaDebuffFlat {  get; set; } = 0.1;
+		[Range(1.0, 1.3)] public double JojaDebuffMultiplier { get; set; } = 1.2;
 
 		public bool IHaveRAM { get; set; } = false;
 	}

@@ -16,7 +16,7 @@ namespace Thrive.src.Services
 		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; } = new();
 		public string? CurrentMapKey { get; private set; }
 		bool curMapSaved { get; set; } = false;
-		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; } = new Dictionary<string, Domain.CropData>();
+		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; }
 		public List<Formulas.CropRequirementFormula> CropReqFormulaList { get; set; }
 		public List<Formulas.CropDepreciationFormula> CropDepFormulaList { get; set; }
 		public List<Formulas.SoilInitializationFormulas> SoilInitFormulaList { get; set; }
@@ -36,6 +36,7 @@ namespace Thrive.src.Services
 			CropReqFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropReqFormulas, rand, soilPropertiesCount);
 			CropDepFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropDepreFormulas, rand, soilPropertiesCount);
 			SoilInitFormulaList = Helpers.PartialFY_Shuffle(Formulas.SoilInitFormulas, rand, soilPropertiesCount);
+			KnownCropDict = new Dictionary<string, Domain.CropData>();
 		}
 
 		public SoilPropertiesMap StartMap()
@@ -104,12 +105,17 @@ namespace Thrive.src.Services
 			}
 		}
 
-		public static int newCropQuality(StardewValley.Object o, int x, int y){
-			
-			return 1;
+		public int NewCropQuality(StardewValley.Object o, int x, int y)
+		{
+			KnownCropDict.TryGetValue(o.Name, out Domain.CropData cd);
+			if (cd == null){
+				cd = new Domain.CropData(o.ItemId, new Random((int)Game1.uniqueIDForThisGame), CropReqFormulaList, CropDepFormulaList, gameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
+				KnownCropDict[o.Name] = cd;
+			}
+			return cd.GetRandomQualityFromHealth(gameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
 		}
 
-		public static int newForageQuality(StardewValley.Object o, int x, int y)
+		public static int NewForageQuality(StardewValley.Object o, int x, int y)
 		{
 			return 1;
 		}

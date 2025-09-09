@@ -19,7 +19,7 @@ namespace Thrive.src.Services
 		{
 			CodeMatcher matcher = new(instructions);
 			MethodInfo farmerProfessionsInfo = AccessTools.PropertyGetter(typeof(StardewValley.Farmer), nameof(StardewValley.Farmer.professions));
-			MethodInfo myForageQualityInfo = AccessTools.Method(typeof(FarmingHandler), nameof(FarmingHandler.newForageQuality));
+			MethodInfo myForageQualityInfo = AccessTools.Method(typeof(FarmingHandler), nameof(FarmingHandler.NewForageQuality));
 			MethodInfo addPropertiesInfo = AccessTools.Method(typeof(CropQuality_HarmonyPatch), nameof(AddProperties));
 
 			matcher.MatchStartForward(
@@ -38,7 +38,7 @@ namespace Thrive.src.Services
 		public static IEnumerable<CodeInstruction> HarvestCrop_Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			CodeMatcher matcher = new(instructions);
-			MethodInfo myCropQualityInfo = AccessTools.Method(typeof(FarmingHandler), nameof(FarmingHandler.newCropQuality));
+			MethodInfo myCropQualityInfo = AccessTools.Method(typeof(FarmingHandler), nameof(FarmingHandler.NewCropQuality));
 			MethodInfo addPropertiesInfo = AccessTools.Method(typeof(CropQuality_HarmonyPatch), nameof(AddProperties));
 
 
@@ -53,11 +53,6 @@ namespace Thrive.src.Services
 				);
 
 			return matcher.InstructionEnumeration();
-		}
-
-		public static void MyForageQuality(StardewValley.Object o, int xTile, int yTile)
-		{
-			o.Quality = FarmingHandler.newCropQuality(o, xTile, yTile);
 		}
 
 		public static void AddProperties(){

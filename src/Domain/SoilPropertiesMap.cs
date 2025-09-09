@@ -5,6 +5,7 @@ namespace Thrive.src.Domain
 {
 	public class SoilPropertiesMap
 	{
+		public int DataVersion { get; set; }
 		public int ManaMax { get; set; }
 		public int MapMana { get; set; }
 		public SoilProperties[][] MapData { get; set; }
