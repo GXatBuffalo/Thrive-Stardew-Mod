@@ -1,7 +1,7 @@
 ﻿# Thrive: A Stardew Valley Mod – Design Document
 
 **Author:** SomebodyUnown 
-**Last Updated:** 2025-09-05
+**Last Updated:** 2025-09-11
 **Project Status:** In Progress, v0.2.0alpha
 
 ---
@@ -225,7 +225,7 @@ graph TD
 - **Frameworks:**
   - **SMAPI** – Primary modding API for loading custom C# logic into the game loop and data model.
   - **Content Patcher** – Handles adding content and asset (e.g., custom events) without custom code.
-- **Language:** C# (target .NET Framework 6.0), CIL
+- **Language:** C# (target .NET 6.0), CIL
 - **Tooling:** Visual Studio 2022 for development and debugging.
 - **Build System:** MSBuild with SMAPI mod packaging format.
 
@@ -246,8 +246,9 @@ graph TD
 - [x] Add configuration file with Generic Mod Config Menu (GMCM) support for adjustable mechanics.
 - [x] Implement infrastructure for persistent per-save but randomized distribution formulas for various mechanics.
 - [x] Update code logic allowing for dynamic number of soil properties.
-- [ ] Define logic to adjust yields and quality based on crop health on harvest.
+- [x] Define logic to adjust yields and quality based on crop health on harvest.
 - [x] Harmony patch StardewValley.Crops.harvest to adjust quality.
+- [ ] Update soil properties daily on all maps for all tiles with crops. 
 - [ ] Define logic for customized objects that undo soil depletion.
 - [ ] Introduce custom player tools for measuring soil and crop health.
 - [ ] Add internationalization (i18n) support.
@@ -261,6 +262,7 @@ graph TD
 - [ ] Add giant crop compatibility.
 - [ ] Add support for non-standard “crop-like” growable and harvestable objects.
 - [ ] Discourage farming outside farm maps for both lore and performance reasons.
+- [ ] Add support for mid-save installation.
 - [ ] Add save-versioning for Thrive's moddata
 
 ### v0.4 - Player Interactions and User Interfaces
