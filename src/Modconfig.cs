@@ -21,6 +21,7 @@ namespace Thrive.src
 		[Range(1.0, 1.3)] public double JojaDebuffMultiplier { get; set; } = 1.2;
 
 		public bool IHaveRAM { get; set; } = false;
+		public bool RAMconfigFlipped { get; set; } = false;
 	}
 
 	// https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors

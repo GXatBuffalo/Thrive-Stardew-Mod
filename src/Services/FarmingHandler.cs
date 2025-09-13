@@ -14,7 +14,7 @@ namespace Thrive.src.Services
 		public int propertyMax = 1000;
 		public SoilPropertiesMap CurrentMap { get; private set; } = new SoilPropertiesMap(0, 0, 0);
 		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; } = new();
-		public string? CurrentMapKey { get; private set; }
+		public string CurrentMapKey { get; private set; }
 		bool curMapSaved { get; set; } = false;
 		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; }
 		public List<Formulas.CropRequirementFormula> CropReqFormulaList { get; set; }
@@ -91,9 +91,10 @@ namespace Thrive.src.Services
 		}
 
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
-		public void UpdateSoilAndCropHealth(SoilProperties sn, Domain.CropData cd)
+		public SoilProperties UpdateSoilAndCropHealth(SoilProperties sn)
 		{
 			var configs = gameHandler.ReadConfig<ModConfig>();
+			Domain.CropData cd = KnownCropDict[sn.CropID];
 			for (int x = 0; x < configs.SoilPropertyCount+2; x++)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
@@ -102,6 +103,26 @@ namespace Thrive.src.Services
 					sn.Health[x] -= 18;
 
 				sn.SoilStats[x] -= cd.SoilDeprecation[x];
+			}
+			return sn;
+		}
+
+		public void NightlySoilUpdateAll(){
+			if(gameHandler.ReadConfig<ModConfig>().IHaveRAM){
+				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in AllMaps){
+					SoilProperties[,] curMap = n_SPMap.Value.MapData;
+					for (int y = n_SPMap.Value.minY; y < n_SPMap.Value.maxY; y++)
+					{
+						for (int x = n_SPMap.Value.minX; x < n_SPMap.Value.maxX; x++)
+						{
+							curMap[y,x] = UpdateSoilAndCropHealth(curMap[y,x]);
+						}
+					}
+				}
+				gameHandler.Data.WriteSaveData("Thrive.AllSoilPropertyMaps", AllMaps);
+			}
+			else{
+				
 			}
 		}
 

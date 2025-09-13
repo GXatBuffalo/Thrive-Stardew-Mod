@@ -153,7 +153,14 @@ namespace Thrive.src
 			configMenu.AddBoolOption(
 				mod: this.ModManifest,
 				getValue: () => this.Config.IHaveRAM,
-				setValue: value => this.Config.IHaveRAM = value,
+				setValue: value => 
+													{	
+														if (value != this.Config.IHaveRAM)
+														{
+															this.Config.RAMconfigFlipped = true;
+														}
+														this.Config.IHaveRAM = value;
+													},
 				name: () => "I have RAM.",
 				tooltip: () => "I have RAM, load all my maps to memory."
 			);
