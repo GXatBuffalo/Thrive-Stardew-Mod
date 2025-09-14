@@ -33,9 +33,11 @@ namespace Thrive.src
 		{
 			GameLocation oldLocation = e.OldLocation;
 			GameLocation newLocation = e.NewLocation;
-			F_Handler.SetCurrentMap(oldLocation, newLocation);
+			if (!this.Config.IHaveRAM)
+			{
+				F_Handler.SetCurrentMap(oldLocation, newLocation);
+			}
 		}
-
 		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
 		{
 			SetConfigMenu(sender, e);

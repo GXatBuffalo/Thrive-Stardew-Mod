@@ -7,16 +7,27 @@ namespace Thrive.src.Services
 	public class FarmingHandler
 	{
 		public IMonitor Monitor { get; }
-		public IModHelper gameHandler { get; }
+		public IModHelper GameHandler { get; }
 
 		public List<string> SoilNutrientNames { get; set; } = new List<string> { "Nitro", "Phos", "Aera", "pH", "Microbes" };
 		public int propertyMin = 0;
 		public int propertyMax = 1000;
+
+		//keep the main farm map always loaded
+		public SoilPropertiesMap MainFarmMap { get; private set; }
+		
+		// current implementation, but move to be used for additional farms and maps 
 		public SoilPropertiesMap CurrentMap { get; private set; } = new SoilPropertiesMap(0, 0, 0);
-		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; } = new();
+		public List<string> SoilMapKeys { get; set; }	
 		public string CurrentMapKey { get; private set; }
 		bool curMapSaved { get; set; } = false;
+		// current implementation where all maps are kept in memory if player indicates to
+		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; } = new();
+
+		//storage for data player has discovered for crops
 		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; }
+
+		// formals for distribution of attributes in various mechanics
 		public List<Formulas.CropRequirementFormula> CropReqFormulaList { get; set; }
 		public List<Formulas.CropDepreciationFormula> CropDepFormulaList { get; set; }
 		public List<Formulas.SoilInitializationFormulas> SoilInitFormulaList { get; set; }
@@ -24,14 +35,13 @@ namespace Thrive.src.Services
 		public FarmingHandler(IModHelper helper, IMonitor monitor)
 		{
 			Monitor = monitor;
-			gameHandler = helper;
-			Random rand = new Random((int)Game1.uniqueIDForThisGame);
+			GameHandler = helper;
 			InitializeFormulas();
 		}
 
 		public void InitializeFormulas()
 		{
-			int soilPropertiesCount = gameHandler.ReadConfig<ModConfig>().SoilPropertyCount;
+			int soilPropertiesCount = GameHandler.ReadConfig<ModConfig>().SoilPropertyCount;
 			Random rand = new Random((int)Game1.uniqueIDForThisGame);
 			CropReqFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropReqFormulas, rand, soilPropertiesCount);
 			CropDepFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropDepreFormulas, rand, soilPropertiesCount);
@@ -40,7 +50,7 @@ namespace Thrive.src.Services
 		}
 
 		public SoilPropertiesMap StartMap()
-		{
+		{	
 			int width = Game1.currentLocation.Map.Layers[0].LayerWidth;
 			int height = Game1.currentLocation.Map.Layers[0].LayerHeight;
 			Random rand = new Random();
@@ -51,33 +61,35 @@ namespace Thrive.src.Services
 		public void LoadCurrentMap()
 		{
 			CurrentMapKey = Game1.currentLocation.Name;
-			CurrentMap = gameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
+			CurrentMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
 		}
 
 		public void SaveCurrentMap()
 		{
-			gameHandler.Data.WriteSaveData(CurrentMapKey, CurrentMap);
+			GameHandler.Data.WriteSaveData(CurrentMapKey, CurrentMap);
 		}
 
 		// run when LocationChanged and when config.IHAVERAM is false
 		public void SetCurrentMap(GameLocation oldLocation, GameLocation newLocation)
 		{
-			if(curMapSaved == false){
-				SaveCurrentMap();
-				curMapSaved = true;
-			}
 			if(newLocation.IsFarm || newLocation.Name.ToLower().Contains(" farm")){
 				if (newLocation.Name == CurrentMapKey)
 				{
 					return;
 				}
+				if (curMapSaved == false)
+				{
+					SaveCurrentMap();
+					curMapSaved = true;
+				}
 				CurrentMapKey = newLocation.Name;
-				if(!gameHandler.ReadConfig<ModConfig>().IHaveRAM){ 
-					var tempMap = gameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
+				if(!GameHandler.ReadConfig<ModConfig>().IHaveRAM){ 
+					var tempMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
 					if (tempMap != null) {
 						LoadCurrentMap();
 					} else {
 						CurrentMap = StartMap();
+						SoilMapKeys.Add("Thrive." + newLocation.Name.ToLower());
 					}
 				}
 				else{
@@ -93,7 +105,7 @@ namespace Thrive.src.Services
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
 		public SoilProperties UpdateSoilAndCropHealth(SoilProperties sn)
 		{
-			var configs = gameHandler.ReadConfig<ModConfig>();
+			var configs = GameHandler.ReadConfig<ModConfig>();
 			Domain.CropData cd = KnownCropDict[sn.CropID];
 			for (int x = 0; x < configs.SoilPropertyCount+2; x++)
 			{
@@ -108,21 +120,48 @@ namespace Thrive.src.Services
 		}
 
 		public void NightlySoilUpdateAll(){
-			if(gameHandler.ReadConfig<ModConfig>().IHaveRAM){
-				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in AllMaps){
+			if (GameHandler.ReadConfig<ModConfig>().IHaveRAM) {
+				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in AllMaps) {
 					SoilProperties[,] curMap = n_SPMap.Value.MapData;
 					for (int y = n_SPMap.Value.minY; y < n_SPMap.Value.maxY; y++)
 					{
 						for (int x = n_SPMap.Value.minX; x < n_SPMap.Value.maxX; x++)
 						{
-							curMap[y,x] = UpdateSoilAndCropHealth(curMap[y,x]);
+							curMap[y, x] = UpdateSoilAndCropHealth(curMap[y, x]);
 						}
 					}
+					n_SPMap.Value.MapData = curMap;
 				}
-				gameHandler.Data.WriteSaveData("Thrive.AllSoilPropertyMaps", AllMaps);
+				GameHandler.Data.WriteSaveData("Thrive.AllSoilPropertyMaps", AllMaps);
 			}
-			else{
-				
+			else {
+				foreach (string keyName in SoilMapKeys){
+					SoilPropertiesMap tempMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(keyName);
+					SoilProperties[,] curMap = tempMap.MapData;
+					for (int y = tempMap.minY; y < tempMap.maxY; y++)
+					{
+						for (int x = tempMap.minX; x < tempMap.maxX; x++)
+						{
+							curMap[y, x] = UpdateSoilAndCropHealth(curMap[y, x]);
+						}
+					}
+					tempMap.MapData = curMap;
+					GameHandler.Data.WriteSaveData(keyName, tempMap);
+				}
+			}
+		}
+
+		//run on game load
+		public void MigrateSoilSaveData(){
+			if(GameHandler.ReadConfig<ModConfig>().RAMconfigFlipped){
+				if (GameHandler.ReadConfig<ModConfig>().IHaveRAM == true)
+				{
+					//Migrate from individual maps to dict of all
+				}
+				else
+				{
+					//migrate from dict of all mapdata to individual
+				}
 			}
 		}
 
@@ -130,10 +169,10 @@ namespace Thrive.src.Services
 		{
 			KnownCropDict.TryGetValue(o.Name, out Domain.CropData cd);
 			if (cd == null){
-				cd = new Domain.CropData(o.ItemId, new Random((int)Game1.uniqueIDForThisGame), CropReqFormulaList, CropDepFormulaList, gameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
+				cd = new Domain.CropData(o.ItemId, new Random((int)Game1.uniqueIDForThisGame), CropReqFormulaList, CropDepFormulaList, GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
 				KnownCropDict[o.Name] = cd;
 			}
-			return cd.GetRandomQualityFromHealth(gameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
+			return cd.GetRandomQualityFromHealth(GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
 		}
 
 		public static int NewForageQuality(StardewValley.Object o, int x, int y)
