@@ -15,14 +15,14 @@ namespace Thrive.src.Services
 
 		//keep the main farm map always loaded
 		public SoilPropertiesMap MainFarmMap { get; private set; }
-		
-		// current implementation, but move to be used for additional farms and maps 
-		public SoilPropertiesMap CurrentMap { get; private set; } = new SoilPropertiesMap(0, 0, 0);
+
+		// current implementation, but move to be used for only additional farms and maps 
+		public SoilPropertiesMap SecondaryFarmMap { get; private set; }
 		public List<string> SoilMapKeys { get; set; }	
-		public string CurrentMapKey { get; private set; }
-		bool curMapSaved { get; set; } = false;
+		public string LastMapKey { get; private set; }
+		bool LastMapSaved { get; set; } = false;
 		// current implementation where all maps are kept in memory if player indicates to
-		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; } = new();
+		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; }
 
 		//storage for data player has discovered for crops
 		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; }
@@ -37,6 +37,8 @@ namespace Thrive.src.Services
 			Monitor = monitor;
 			GameHandler = helper;
 			InitializeFormulas();
+			LoadMainFarmMap();
+			LoadAllMapData();
 		}
 
 		public void InitializeFormulas()
@@ -60,49 +62,79 @@ namespace Thrive.src.Services
 
 		public void LoadCurrentMap()
 		{
-			CurrentMapKey = Game1.currentLocation.Name;
-			CurrentMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
+			LastMapKey = Game1.currentLocation.Name;
+			SecondaryFarmMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(LastMapKey);
 		}
 
-		public void SaveCurrentMap()
+		public void SaveLastMap()
 		{
-			GameHandler.Data.WriteSaveData(CurrentMapKey, CurrentMap);
+			GameHandler.Data.WriteSaveData(LastMapKey, SecondaryFarmMap);
+		}
+
+		public void StartFarmMap(){
+			Farm f = Game1.getFarm();
+			int width = f.Map.Layers[0].LayerWidth;
+			int height = f.Map.Layers[0].LayerHeight;
+			Random rand = new Random();
+			// 10-30 is beginning mana, remember to rebalance
+			MainFarmMap =  new SoilPropertiesMap(width, height, rand.Next(10, 30));
+		}
+
+		public void LoadMainFarmMap(){
+			SoilPropertiesMap tempfarm = GameHandler.Data.ReadSaveData<SoilPropertiesMap>("Thrive.MainFarm");
+			if (tempfarm != null)
+			{
+				MainFarmMap = tempfarm;
+			}else {
+				StartFarmMap();
+			}
+		}
+
+		public void LoadAllMapData(){
+			if(GameHandler.ReadConfig<ModConfig>().IHaveRAM){
+				AllMaps = GameHandler.Data.ReadSaveData<Dictionary<string, SoilPropertiesMap>>("Thrive.AllSoilPropertyMaps");
+				if (AllMaps == null)
+				{
+					AllMaps = new();
+				}
+			}
 		}
 
 		// run when LocationChanged and when config.IHAVERAM is false
 		public void SetCurrentMap(GameLocation oldLocation, GameLocation newLocation)
 		{
-			if(newLocation.IsFarm || newLocation.Name.ToLower().Contains(" farm")){
-				if (newLocation.Name == CurrentMapKey)
+			if(newLocation.DisplayName != "Farm" && (newLocation.IsFarm || newLocation.Name.ToLower().Contains(" farm"))){
+				if (newLocation.Name == LastMapKey)
 				{
 					return;
 				}
-				if (curMapSaved == false)
+				if (LastMapSaved == false)
 				{
-					SaveCurrentMap();
-					curMapSaved = true;
+					SaveLastMap();
+					LastMapSaved = true;
 				}
-				CurrentMapKey = newLocation.Name;
+				LastMapKey = newLocation.Name;
 				if(!GameHandler.ReadConfig<ModConfig>().IHaveRAM){ 
-					var tempMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(CurrentMapKey);
+					var tempMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(LastMapKey);
 					if (tempMap != null) {
 						LoadCurrentMap();
 					} else {
-						CurrentMap = StartMap();
+						SecondaryFarmMap = StartMap();
 						SoilMapKeys.Add("Thrive." + newLocation.Name.ToLower());
 					}
 				}
 				else{
-					if (!AllMaps.TryGetValue(CurrentMapKey, out _))
+					if (!AllMaps.TryGetValue(LastMapKey, out _))
 					{
-						AllMaps[CurrentMapKey] = StartMap();
+						AllMaps[LastMapKey] = StartMap();
 					}
 				}
-				curMapSaved = false;
+				LastMapSaved = false;
 			}
 		}
 
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
+		// CROP health not updated here yet!
 		public SoilProperties UpdateSoilAndCropHealth(SoilProperties sn)
 		{
 			var configs = GameHandler.ReadConfig<ModConfig>();
