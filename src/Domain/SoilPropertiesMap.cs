@@ -11,6 +11,7 @@ namespace Thrive.src.Domain
 		public int ManaMax { get; set; }  // limit on Mana on the map.
 
 		public SoilProperties[,] MapData { get; set; }
+		// only change when a SoilProperty is initialized or removed.
 		public int minY { get; set; }			// lowest tile on Y axis farmer has hoed;
 		public int maxY { get; set; }     // highest tile on Y axis farmer has hoed;
 		public int minX { get; set; }     // lowest tile on X axis farmer has hoed;

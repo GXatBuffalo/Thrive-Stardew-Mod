@@ -25,7 +25,7 @@ namespace Thrive.src.Services
 		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; }
 
 		//storage for data player has discovered for crops
-		public Dictionary<string, Domain.CropData> KnownCropDict { get; set; }
+		public Dictionary<string, Domain.BaseCropData> KnownCropDict { get; set; }
 
 		// formals for distribution of attributes in various mechanics
 		public List<Formulas.CropRequirementFormula> CropReqFormulaList { get; set; }
@@ -48,7 +48,7 @@ namespace Thrive.src.Services
 			CropReqFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropReqFormulas, rand, soilPropertiesCount);
 			CropDepFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropDepreFormulas, rand, soilPropertiesCount);
 			SoilInitFormulaList = Helpers.PartialFY_Shuffle(Formulas.SoilInitFormulas, rand, soilPropertiesCount);
-			KnownCropDict = new Dictionary<string, Domain.CropData>();
+			KnownCropDict = new Dictionary<string, Domain.BaseCropData>();
 		}
 
 		public SoilPropertiesMap StartMap()
@@ -103,7 +103,10 @@ namespace Thrive.src.Services
 		// run when LocationChanged and when config.IHAVERAM is false
 		public void SetCurrentMap(GameLocation oldLocation, GameLocation newLocation)
 		{
-			if(newLocation.DisplayName != "Farm" && (newLocation.IsFarm || newLocation.Name.ToLower().Contains(" farm"))){
+			if(newLocation.DisplayName != "Farm" && 
+				(newLocation.IsFarm || newLocation.Name.ToLower().Contains(" farm") ||
+				 newLocation.IsGreenhouse || newLocation.Name.ToLower().Contains(" greenhouse")
+				)){
 				if (newLocation.Name == LastMapKey)
 				{
 					return;
@@ -135,10 +138,11 @@ namespace Thrive.src.Services
 
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
 		// CROP health not updated here yet!
+		// health management needs to account for players changing configs for soil property counts
 		public SoilProperties UpdateSoilAndCropHealth(SoilProperties sn)
 		{
 			var configs = GameHandler.ReadConfig<ModConfig>();
-			Domain.CropData cd = KnownCropDict[sn.CropID];
+			Domain.BaseCropData cd = KnownCropDict[sn.CropID];
 			for (int x = 0; x < configs.SoilPropertyCount+2; x++)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
@@ -197,11 +201,13 @@ namespace Thrive.src.Services
 			}
 		}
 
-		public int NewCropQuality(StardewValley.Object o, int x, int y)
+
+		// harmony patch - needs map name from within StardewValley.Crop.harvest to fix
+		public int OnHarvest_GetCropQuality(StardewValley.Object o, int x, int y)
 		{
-			KnownCropDict.TryGetValue(o.Name, out Domain.CropData cd);
+			KnownCropDict.TryGetValue(o.Name, out Domain.BaseCropData cd);
 			if (cd == null){
-				cd = new Domain.CropData(o.ItemId, new Random((int)Game1.uniqueIDForThisGame), CropReqFormulaList, CropDepFormulaList, GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
+				cd = new Domain.BaseCropData(o.ItemId, new Random((int)Game1.uniqueIDForThisGame), CropReqFormulaList, CropDepFormulaList, GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
 				KnownCropDict[o.Name] = cd;
 			}
 			return cd.GetRandomQualityFromHealth(GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
