@@ -42,7 +42,10 @@ namespace Thrive.src.Services
 			CodeMatcher matcher = new(instructions);
 			MethodInfo myCropQualityInfo = AccessTools.Method(typeof(FarmingHandler), nameof(FarmingHandler.OnHarvest_GetCropQuality));
 			MethodInfo addPropertiesInfo = AccessTools.Method(typeof(CropQuality_HarmonyPatch), nameof(AddProperties));
-			MethodInfo getMapNameInfo = AccessTools.PropertyGetter(typeof(StardewValley.GameLocation), nameof(StardewValley.GameLocation.Name));
+			MethodInfo getMapNameInfo = AccessTools.PropertyGetter(typeof(StardewValley.GameLocation), nameof(StardewValley.GameLocation.Name)); 
+			MethodInfo clampMethodInfo = AccessTools.Method(typeof(Microsoft.Xna.Framework.MathHelper),
+																								nameof(Microsoft.Xna.Framework.MathHelper.Clamp),
+																								new[] { typeof(int), typeof(int), typeof(int) });
 
 			// match first loading of variable 'cropQuality'
 			matcher.MatchStartForward(new CodeMatch(OpCodes.Stloc_S, (byte)14))
@@ -50,11 +53,10 @@ namespace Thrive.src.Services
 						 .Advance(-1);
 			int startIndex = matcher.Pos;
 
-			matcher.MatchStartForward(new CodeMatch(OpCodes.Stloc_S, (byte)14))
-			 .MatchStartForward(new CodeMatch(OpCodes.Stloc_S, (byte)14))
-			 .MatchStartForward(new CodeMatch(OpCodes.Stloc_S, (byte)14))
-			 .MatchStartForward(new CodeMatch(OpCodes.Stloc_S, (byte)14))
-			 .ThrowIfNotMatch($"Could not find end point match for {nameof(HarvestCrop_Transpiler)}");
+			// match cropQuality = MathHelper.Clamp
+			matcher.MatchStartForward(new CodeMatch(OpCodes.Call, clampMethodInfo))
+						 .ThrowIfNotMatch($"Could not find end point match for {nameof(HarvestCrop_Transpiler)}")
+						 .MatchStartForward(new CodeMatch(OpCodes.Stloc_S, (byte)14));
 
 			int endIndex = matcher.Pos;
 

@@ -203,14 +203,24 @@ namespace Thrive.src.Services
 
 
 		// harmony patch - needs map name from within StardewValley.Crop.harvest to fix
-		public int OnHarvest_GetCropQuality(StardewValley.Object o, int x, int y)
+		public int OnHarvest_GetCropQuality(StardewValley.Object o, string map_name, int x, int y)
 		{
-			KnownCropDict.TryGetValue(o.Name, out Domain.BaseCropData cd);
-			if (cd == null){
-				cd = new Domain.BaseCropData(o.ItemId, new Random((int)Game1.uniqueIDForThisGame), CropReqFormulaList, CropDepFormulaList, GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
-				KnownCropDict[o.Name] = cd;
+			SoilProperties sn;
+			if (GameHandler.ReadConfig<ModConfig>().IHaveRAM == true)
+			{
+				sn = AllMaps[map_name].MapData[y, x];
 			}
-			return cd.GetRandomQualityFromHealth(GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
+			else
+			{
+				if(map_name == "Farm"){
+					sn = MainFarmMap.MapData[y, x];
+				}else if(map_name == LastMapKey){
+					sn = SecondaryFarmMap.MapData[y, x];
+				}else{
+					sn = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(map_name).MapData[y,x];
+				}
+			}
+			return sn.CropHere.GetRandomQualityFromHealth(GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
 		}
 
 		public static int NewForageQuality(StardewValley.Object o, int x, int y)
