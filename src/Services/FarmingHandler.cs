@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
 using Thrive.src.Domain;
 
@@ -17,12 +18,10 @@ namespace Thrive.src.Services
 		public SoilPropertiesMap MainFarmMap { get; private set; }
 
 		// current implementation, but move to be used for only additional farms and maps 
-		public SoilPropertiesMap SecondaryFarmMap { get; private set; }
 		public List<string> SoilMapKeys { get; set; }	
-		public string LastMapKey { get; private set; }
-		bool LastMapSaved { get; set; } = false;
+
 		// current implementation where all maps are kept in memory if player indicates to
-		public Dictionary<string, SoilPropertiesMap> AllMaps { get; private set; }
+		public Dictionary<string, SoilPropertiesMap> FarmedMapData { get; private set; }
 
 		//storage for data player has discovered for crops
 		public Dictionary<string, Domain.BaseCropData> KnownCropDict { get; set; }
@@ -60,17 +59,6 @@ namespace Thrive.src.Services
 			return new SoilPropertiesMap(width, height, rand.Next(10, 30));
 		}
 
-		public void LoadCurrentMap()
-		{
-			LastMapKey = Game1.currentLocation.Name;
-			SecondaryFarmMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(LastMapKey);
-		}
-
-		public void SaveLastMap()
-		{
-			GameHandler.Data.WriteSaveData(LastMapKey, SecondaryFarmMap);
-		}
-
 		public void StartFarmMap(){
 			Farm f = Game1.getFarm();
 			int width = f.Map.Layers[0].LayerWidth;
@@ -91,49 +79,12 @@ namespace Thrive.src.Services
 		}
 
 		public void LoadAllMapData(){
-			if(GameHandler.ReadConfig<ModConfig>().IHaveRAM){
-				AllMaps = GameHandler.Data.ReadSaveData<Dictionary<string, SoilPropertiesMap>>("Thrive.AllSoilPropertyMaps");
-				if (AllMaps == null)
-				{
-					AllMaps = new();
-				}
+			FarmedMapData = GameHandler.Data.ReadSaveData<Dictionary<string, SoilPropertiesMap>>("Thrive.AllSoilPropertyMaps");
+			if (FarmedMapData == null)
+			{
+				FarmedMapData = new();
 			}
-		}
-
-		// run when LocationChanged and when config.IHAVERAM is false
-		public void SetCurrentMap(GameLocation oldLocation, GameLocation newLocation)
-		{
-			if(newLocation.DisplayName != "Farm" && 
-				(newLocation.IsFarm || newLocation.Name.ToLower().Contains(" farm") ||
-				 newLocation.IsGreenhouse || newLocation.Name.ToLower().Contains(" greenhouse")
-				)){
-				if (newLocation.Name == LastMapKey)
-				{
-					return;
-				}
-				if (LastMapSaved == false)
-				{
-					SaveLastMap();
-					LastMapSaved = true;
-				}
-				LastMapKey = newLocation.Name;
-				if(!GameHandler.ReadConfig<ModConfig>().IHaveRAM){ 
-					var tempMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(LastMapKey);
-					if (tempMap != null) {
-						LoadCurrentMap();
-					} else {
-						SecondaryFarmMap = StartMap();
-						SoilMapKeys.Add("Thrive." + newLocation.Name.ToLower());
-					}
-				}
-				else{
-					if (!AllMaps.TryGetValue(LastMapKey, out _))
-					{
-						AllMaps[LastMapKey] = StartMap();
-					}
-				}
-				LastMapSaved = false;
-			}
+			
 		}
 
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
@@ -142,7 +93,7 @@ namespace Thrive.src.Services
 		public SoilProperties UpdateSoilAndCropHealth(SoilProperties sn)
 		{
 			var configs = GameHandler.ReadConfig<ModConfig>();
-			Domain.BaseCropData cd = KnownCropDict[sn.CropID];
+			Domain.BaseCropData cd = KnownCropDict[sn.CropHere.CropID];
 			for (int x = 0; x < configs.SoilPropertyCount+2; x++)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
@@ -156,8 +107,7 @@ namespace Thrive.src.Services
 		}
 
 		public void NightlySoilUpdateAll(){
-			if (GameHandler.ReadConfig<ModConfig>().IHaveRAM) {
-				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in AllMaps) {
+				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in FarmedMapData) {
 					SoilProperties[,] curMap = n_SPMap.Value.MapData;
 					for (int y = n_SPMap.Value.minY; y < n_SPMap.Value.maxY; y++)
 					{
@@ -168,36 +118,13 @@ namespace Thrive.src.Services
 					}
 					n_SPMap.Value.MapData = curMap;
 				}
-				GameHandler.Data.WriteSaveData("Thrive.AllSoilPropertyMaps", AllMaps);
-			}
-			else {
-				foreach (string keyName in SoilMapKeys){
-					SoilPropertiesMap tempMap = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(keyName);
-					SoilProperties[,] curMap = tempMap.MapData;
-					for (int y = tempMap.minY; y < tempMap.maxY; y++)
-					{
-						for (int x = tempMap.minX; x < tempMap.maxX; x++)
-						{
-							curMap[y, x] = UpdateSoilAndCropHealth(curMap[y, x]);
-						}
-					}
-					tempMap.MapData = curMap;
-					GameHandler.Data.WriteSaveData(keyName, tempMap);
-				}
-			}
+				GameHandler.Data.WriteSaveData("Thrive.AllSoilPropertyMaps", FarmedMapData);
+			
 		}
 
-		//run on game load
-		public void MigrateSoilSaveData(){
-			if(GameHandler.ReadConfig<ModConfig>().RAMconfigFlipped){
-				if (GameHandler.ReadConfig<ModConfig>().IHaveRAM == true)
-				{
-					//Migrate from individual maps to dict of all
-				}
-				else
-				{
-					//migrate from dict of all mapdata to individual
-				}
+		public void OnHoeingDone(string loc, Vector2 coords){
+			if (!SoilMapKeys.Contains(loc)){
+				
 			}
 		}
 
@@ -205,21 +132,8 @@ namespace Thrive.src.Services
 		// harmony patch - needs map name from within StardewValley.Crop.harvest to fix
 		public int OnHarvest_GetCropQuality(StardewValley.Object o, string map_name, int x, int y)
 		{
-			SoilProperties sn;
-			if (GameHandler.ReadConfig<ModConfig>().IHaveRAM == true)
-			{
-				sn = AllMaps[map_name].MapData[y, x];
-			}
-			else
-			{
-				if(map_name == "Farm"){
-					sn = MainFarmMap.MapData[y, x];
-				}else if(map_name == LastMapKey){
-					sn = SecondaryFarmMap.MapData[y, x];
-				}else{
-					sn = GameHandler.Data.ReadSaveData<SoilPropertiesMap>(map_name).MapData[y,x];
-				}
-			}
+			SoilProperties sn = FarmedMapData[map_name].MapData[y, x];
+
 			return sn.CropHere.GetRandomQualityFromHealth(GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
 		}
 

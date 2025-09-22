@@ -1,25 +1,20 @@
 ﻿using StardewValley;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Thrive.src.Domain
 {
 	public class GrowingCropStats
 	{
-		public string cropid { get; set; }
+		public string CropID { get; set; }
 		public List<int> HealthStats { get; set; }
 
 
 		public GrowingCropStats(string cid, List<int> StarterHealthStats, int soilPropertyCount) 
 		{
-			cropid = cid;
+			CropID = cid;
 			HealthStats = StarterHealthStats.GetRange(0, soilPropertyCount);
 		}
 
+		// using the health from managed soil, return a quality for the crop growing on it
 		public int GetRandomQualityFromHealth(int soilProperties)
 		{
 			int counter = 0;

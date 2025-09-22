@@ -1,6 +1,4 @@
 ﻿using StardewValley;
-using StardewValley.Network.NetEvents;
-using System.Reflection.Metadata;
 
 namespace Thrive.src.Domain
 {

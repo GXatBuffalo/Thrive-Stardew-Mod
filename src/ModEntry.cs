@@ -1,8 +1,9 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using Thrive.src.Services;
 using StardewValley;
+using StardewValley.TerrainFeatures;
+using Thrive.src.Services;
 
 namespace Thrive.src
 {
@@ -27,22 +28,34 @@ namespace Thrive.src
 			helper.Events.GameLoop.GameLaunched += OnGameLaunched;
 			helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
 			helper.Events.Player.Warped += OnPlayerWarp;
+			helper.Events.World.TerrainFeatureListChanged += WasDirtHoed;
 		}
 
+		// on warp, tell mod what map we are on. temporarily removed
 		private void OnPlayerWarp(object? sender, WarpedEventArgs e)
 		{
 			GameLocation oldLocation = e.OldLocation;
 			GameLocation newLocation = e.NewLocation;
-			if (!this.Config.IHaveRAM)
-			{
-				F_Handler.SetCurrentMap(oldLocation, newLocation);
-			}
 		}
+
+		// when game is launched: setup the config menu
 		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
 		{
 			SetConfigMenu(sender, e);
 		}
 
+		// When any person (or entity like junimos or tractor) changes terrain, check if it is hoeing dirt
+		// relevance: when dirt is hoed in a farm map, soil properties should be initialized if not exist. update check boundaries
+		private void WasDirtHoed(object? sender, TerrainFeatureListChangedEventArgs e) {
+			foreach (var kvp in e.Added)
+			{ 
+				if (kvp.Value is HoeDirt){
+					F_Handler.OnHoeingDone(e.Location.Name, kvp.Key);
+				}
+			}
+		}
+
+		// edits game behavoirs and mechanics
 		private void HarmonyPatching()
 		{
 			var harmony = new Harmony(this.ModManifest.UniqueID);
@@ -59,6 +72,7 @@ namespace Thrive.src
 
 		}
 
+		// Generic Config Menu setup
 		private void SetConfigMenu(object? sender, GameLaunchedEventArgs e)
 		{
 			// get Generic Mod Config Menu's API (if it's installed)
@@ -144,27 +158,17 @@ namespace Thrive.src
 			configMenu.AddNumberOption(
 					mod: this.ModManifest,
 					getValue: () => this.Config.SoilPropertyCount,
-					setValue: value => this.Config.SoilPropertyCount = value,
+					setValue: value => {
+						if (value != this.Config.SoilPropertyCount)
+						{
+							this.Config.SoilPropertyCountChanged = true;
+						}
+						this.Config.SoilPropertyCount = value; },
 					name: () => "Soil Property Count",
 					tooltip: () => "Number of addtional soil properties to use (iridium and mana always on by default).",
 					min: 1,
 					max: 5,
 					interval: 1
-			);
-
-			configMenu.AddBoolOption(
-				mod: this.ModManifest,
-				getValue: () => this.Config.IHaveRAM,
-				setValue: value => 
-													{	
-														if (value != this.Config.IHaveRAM)
-														{
-															this.Config.RAMconfigFlipped = true;
-														}
-														this.Config.IHaveRAM = value;
-													},
-				name: () => "I have RAM.",
-				tooltip: () => "I have RAM, load all my maps to memory."
 			);
 		}
 	}

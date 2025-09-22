@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace Thrive.src.Domain
 {
 	public class SoilPropertiesMap
