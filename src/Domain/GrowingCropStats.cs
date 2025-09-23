@@ -4,13 +4,10 @@ namespace Thrive.src.Domain
 {
 	public class GrowingCropStats
 	{
-		public string CropID { get; set; }
 		public List<int> HealthStats { get; set; }
 
-
-		public GrowingCropStats(string cid, List<int> StarterHealthStats, int soilPropertyCount) 
+		public GrowingCropStats(List<int> StarterHealthStats, int soilPropertyCount) 
 		{
-			CropID = cid;
 			HealthStats = StarterHealthStats.GetRange(0, soilPropertyCount);
 		}
 

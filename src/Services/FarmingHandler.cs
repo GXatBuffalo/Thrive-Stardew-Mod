@@ -21,7 +21,7 @@ namespace Thrive.src.Services
 		public List<string> SoilMapKeys { get; set; }	
 
 		// current implementation where all maps are kept in memory if player indicates to
-		public Dictionary<string, SoilPropertiesMap> FarmedMapData { get; private set; }
+		public Dictionary<string, SoilPropertiesMap> FarmedMapsData { get; private set; }
 
 		//storage for data player has discovered for crops
 		public Dictionary<string, Domain.BaseCropData> KnownCropDict { get; set; }
@@ -31,60 +31,39 @@ namespace Thrive.src.Services
 		public List<Formulas.CropDepreciationFormula> CropDepFormulaList { get; set; }
 		public List<Formulas.SoilInitializationFormulas> SoilInitFormulaList { get; set; }
 
+		public Random rand { get; set; }
+		public int SoilPropertiesCount { get; set; }
+
 		public FarmingHandler(IModHelper helper, IMonitor monitor)
 		{
 			Monitor = monitor;
 			GameHandler = helper;
+			rand = new Random((int)Game1.uniqueIDForThisGame);
+			SoilPropertiesCount = GameHandler.ReadConfig<ModConfig>().SoilPropertyCount + 2;
 			InitializeFormulas();
-			LoadMainFarmMap();
-			LoadAllMapData();
+			LoadMapDataFromStorage();
 		}
 
 		public void InitializeFormulas()
 		{
-			int soilPropertiesCount = GameHandler.ReadConfig<ModConfig>().SoilPropertyCount;
-			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			CropReqFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropReqFormulas, rand, soilPropertiesCount);
-			CropDepFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropDepreFormulas, rand, soilPropertiesCount);
-			SoilInitFormulaList = Helpers.PartialFY_Shuffle(Formulas.SoilInitFormulas, rand, soilPropertiesCount);
+			CropReqFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropReqFormulas, rand, SoilPropertiesCount);
+			CropDepFormulaList = Helpers.PartialFY_Shuffle(Formulas.CropDepreFormulas, rand, SoilPropertiesCount);
+			SoilInitFormulaList = Helpers.PartialFY_Shuffle(Formulas.SoilInitFormulas, rand, SoilPropertiesCount);
 			KnownCropDict = new Dictionary<string, Domain.BaseCropData>();
 		}
 
-		public SoilPropertiesMap StartMap()
+		public SoilPropertiesMap StartMap(GameLocation loc, int x, int y)
 		{	
-			int width = Game1.currentLocation.Map.Layers[0].LayerWidth;
-			int height = Game1.currentLocation.Map.Layers[0].LayerHeight;
-			Random rand = new Random();
 			// 10-30 is beginning mana, remember to rebalance
-			return new SoilPropertiesMap(width, height, rand.Next(10, 30));
+			return new SoilPropertiesMap(loc.Map.Layers[0].LayerWidth, loc.Map.Layers[0].LayerHeight, rand.Next(10, 30), x, y);
 		}
 
-		public void StartFarmMap(){
-			Farm f = Game1.getFarm();
-			int width = f.Map.Layers[0].LayerWidth;
-			int height = f.Map.Layers[0].LayerHeight;
-			Random rand = new Random();
-			// 10-30 is beginning mana, remember to rebalance
-			MainFarmMap =  new SoilPropertiesMap(width, height, rand.Next(10, 30));
-		}
-
-		public void LoadMainFarmMap(){
-			SoilPropertiesMap tempfarm = GameHandler.Data.ReadSaveData<SoilPropertiesMap>("Thrive.MainFarm");
-			if (tempfarm != null)
+		public void LoadMapDataFromStorage(){
+			FarmedMapsData = GameHandler.Data.ReadSaveData<Dictionary<string, SoilPropertiesMap>>("Thrive.FarmedMapsData");
+			if (FarmedMapsData == null)
 			{
-				MainFarmMap = tempfarm;
-			}else {
-				StartFarmMap();
+				FarmedMapsData = new();
 			}
-		}
-
-		public void LoadAllMapData(){
-			FarmedMapData = GameHandler.Data.ReadSaveData<Dictionary<string, SoilPropertiesMap>>("Thrive.AllSoilPropertyMaps");
-			if (FarmedMapData == null)
-			{
-				FarmedMapData = new();
-			}
-			
 		}
 
 		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
@@ -92,9 +71,8 @@ namespace Thrive.src.Services
 		// health management needs to account for players changing configs for soil property counts
 		public SoilProperties UpdateSoilAndCropHealth(SoilProperties sn)
 		{
-			var configs = GameHandler.ReadConfig<ModConfig>();
-			Domain.BaseCropData cd = KnownCropDict[sn.CropHere.CropID];
-			for (int x = 0; x < configs.SoilPropertyCount+2; x++)
+			Domain.BaseCropData cd = KnownCropDict[sn.CropID];
+			for (int x = 0; x < SoilPropertiesCount; x++)
 			{
 				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
 					sn.Health[x] += 10;
@@ -107,34 +85,33 @@ namespace Thrive.src.Services
 		}
 
 		public void NightlySoilUpdateAll(){
-				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in FarmedMapData) {
-					SoilProperties[,] curMap = n_SPMap.Value.MapData;
-					for (int y = n_SPMap.Value.minY; y < n_SPMap.Value.maxY; y++)
-					{
-						for (int x = n_SPMap.Value.minX; x < n_SPMap.Value.maxX; x++)
-						{
-							curMap[y, x] = UpdateSoilAndCropHealth(curMap[y, x]);
-						}
-					}
-					n_SPMap.Value.MapData = curMap;
+				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in FarmedMapsData) {
+				  FarmedMapsData[n_SPMap.Key].NightlyMapUpdate(KnownCropDict);
 				}
-				GameHandler.Data.WriteSaveData("Thrive.AllSoilPropertyMaps", FarmedMapData);
+				GameHandler.Data.WriteSaveData("Thrive.FarmedMapsData", FarmedMapsData);
 			
 		}
 
-		public void OnHoeingDone(string loc, Vector2 coords){
-			if (!SoilMapKeys.Contains(loc)){
-				
+		// run this method when ModEntry detects hoeing was done successfully
+		public void OnHoeingDone(GameLocation loc, Vector2 coords){
+			// if this is a new location
+			if (SoilMapKeys.Contains(loc.Name))
+			{
+				FarmedMapsData[loc.Name].AddNewHoedTile(coords, rand, SoilPropertiesCount, SoilInitFormulaList);
 			}
-		}
+			else if (loc.IsFarm || loc.Name.ToLower().Contains(" farm") ||
+					  loc.IsGreenhouse || loc.Name.ToLower().Contains(" greenhouse"))
+			{
+				SoilMapKeys.Add(loc.Name);
+				FarmedMapsData[loc.Name] = StartMap(loc, (int)coords.X, (int)coords.Y);
+			}
 
+		}
 
 		// harmony patch - needs map name from within StardewValley.Crop.harvest to fix
 		public int OnHarvest_GetCropQuality(StardewValley.Object o, string map_name, int x, int y)
 		{
-			SoilProperties sn = FarmedMapData[map_name].MapData[y, x];
-
-			return sn.CropHere.GetRandomQualityFromHealth(GameHandler.ReadConfig<ModConfig>().SoilPropertyCount);
+			return FarmedMapsData[map_name].MapData[y, x].CropHere.GetRandomQualityFromHealth(SoilPropertiesCount);
 		}
 
 		public static int NewForageQuality(StardewValley.Object o, int x, int y)

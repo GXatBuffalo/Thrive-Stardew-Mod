@@ -50,7 +50,7 @@ namespace Thrive.src
 			foreach (var kvp in e.Added)
 			{ 
 				if (kvp.Value is HoeDirt){
-					F_Handler.OnHoeingDone(e.Location.Name, kvp.Key);
+					F_Handler.OnHoeingDone(e.Location, kvp.Key);
 				}
 			}
 		}

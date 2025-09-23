@@ -1,32 +1,62 @@
 ﻿
+using Microsoft.Xna.Framework;
+using StardewValley.Locations;
+
 namespace Thrive.src.Domain
 {
 	public class SoilPropertiesMap
 	{
 		public int DataVersion { get; set; }
 
-		public int MapMana { get; set; }  // amount of Mana on the map. 
-		public int ManaMax { get; set; }  // limit on Mana on the map.
+		public double MapMana { get; set; }  // amount of Mana on the map. 
+		public double ManaMax { get; set; }  // limit on Mana on the map. 
 
 		public SoilProperties[,] MapData { get; set; }
-		// only change when a SoilProperty is initialized or removed.
-		public int minY { get; set; }			// lowest tile on Y axis farmer has hoed;
-		public int maxY { get; set; }     // highest tile on Y axis farmer has hoed;
-		public int minX { get; set; }     // lowest tile on X axis farmer has hoed;
-		public int maxX	{  get; set; }    // highest tile on X axis farmer has hoed;
+
+		public Vector2 minCoords { get; set; }
+		public Vector2 maxCoords { get; set; }
 		
 		// dictionary to hold location of magic crops using their coords, value is mana drain
 		public Dictionary<(int, int), int> MagicCrops { get; set; } = new();		
 
 		// Constructor. Parameters are map size and mana map starts with.
-		public SoilPropertiesMap(int sizeX, int sizeY, int initialMana)
+		public SoilPropertiesMap(int sizeX, int sizeY, int initialMana, int x, int y)
 		{
 			MapMana = initialMana;
 			MapData = new SoilProperties[sizeY, sizeX];
-			minX = 0;
-			maxX = sizeX-1;
-			minY = 0; 
-			maxY = sizeY-1;
+			minCoords = new Vector2(x, y);
+			maxCoords = new Vector2(x, y);
+		}
+
+		public void CheckMaybeUpdateNewCoords(Vector2 coords)
+		{
+			minCoords = Vector2.Min(minCoords, coords);
+			maxCoords = Vector2.Max(maxCoords, coords);
+		}
+
+		public void AddNewHoedTile(Vector2 coords, Random rand, int propertyCount, List<Formulas.SoilInitializationFormulas> appliedFormula)
+		{
+			int Xcoord = (int)coords.X;
+			int Ycoord = (int)coords.Y;
+			if(MapData[Xcoord, Ycoord] is null){
+				MapData[Xcoord, Ycoord] = new SoilProperties(rand, propertyCount, Xcoord, Ycoord, appliedFormula);
+				CheckMaybeUpdateNewCoords(coords);
+			}
+		}
+
+		public void NightlyMapUpdate(Dictionary<string, Domain.BaseCropData> CropDict)
+		{
+			int minX = (int)minCoords.X;
+			int minY = (int)minCoords.Y;
+			int maxX = (int)maxCoords.X;
+			int maxY = (int)maxCoords.Y;
+			for (int i = minY; i <= maxY; i++)
+			{
+				for (int j = minX; j <= maxX; j++)
+				{
+					MapData[i, j].UpdateSoilandCropHealth(CropDict);
+				}
+			}
 		}
 
 		public void AddMagicCrop(int x, int y, int manaCost) => MagicCrops[(x, y)] = manaCost;
