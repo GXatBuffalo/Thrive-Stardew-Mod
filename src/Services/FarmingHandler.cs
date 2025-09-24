@@ -38,10 +38,10 @@ namespace Thrive.src.Services
 		{
 			Monitor = monitor;
 			GameHandler = helper;
-			rand = new Random((int)Game1.uniqueIDForThisGame);
-			SoilPropertiesCount = GameHandler.ReadConfig<ModConfig>().SoilPropertyCount + 2;
+			rand = new Random((int)Game1.uniqueIDForThisGame); // unique but consistent Random seed for each save file
+			SoilPropertiesCount = GameHandler.ReadConfig<ModConfig>().SoilPropertyCount + 2; // +2 to include default 'iridium' and 'mana' properties
 			InitializeFormulas();
-			LoadMapDataFromStorage();
+			LoadMapDataFromStorage(); 
 		}
 
 		public void InitializeFormulas()
@@ -52,12 +52,14 @@ namespace Thrive.src.Services
 			KnownCropDict = new Dictionary<string, Domain.BaseCropData>();
 		}
 
+		// helper function to initialize SoilPropertiesMap with given args
 		public SoilPropertiesMap StartMap(GameLocation loc, int x, int y)
 		{	
 			// 10-30 is beginning mana, remember to rebalance
 			return new SoilPropertiesMap(loc.Map.Layers[0].LayerWidth, loc.Map.Layers[0].LayerHeight, rand.Next(10, 30), x, y);
 		}
 
+		// try to load map data from where this mod saved it. If not found, make new maps
 		public void LoadMapDataFromStorage(){
 			FarmedMapsData = GameHandler.Data.ReadSaveData<Dictionary<string, SoilPropertiesMap>>("Thrive.FarmedMapsData");
 			if (FarmedMapsData == null)
@@ -84,6 +86,7 @@ namespace Thrive.src.Services
 			return sn;
 		}
 
+		// ran at DayEnd, updates all existing soil tiles in all maps according to the crops grown on them
 		public void NightlySoilUpdateAll(){
 				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in FarmedMapsData) {
 				  FarmedMapsData[n_SPMap.Key].NightlyMapUpdate(KnownCropDict);
@@ -94,14 +97,17 @@ namespace Thrive.src.Services
 
 		// run this method when ModEntry detects hoeing was done successfully
 		public void OnHoeingDone(GameLocation loc, Vector2 coords){
-			// if this is a new location
+			// if this is an existing location
 			if (SoilMapKeys.Contains(loc.Name))
 			{
+				// add soil properties to according tile
 				FarmedMapsData[loc.Name].AddNewHoedTile(coords, rand, SoilPropertiesCount, SoilInitFormulaList);
 			}
+			// check if a farm or greenhouse
 			else if (loc.IsFarm || loc.Name.ToLower().Contains(" farm") ||
 					  loc.IsGreenhouse || loc.Name.ToLower().Contains(" greenhouse"))
 			{
+				// if so, this is a new location, we take note of map name and initialize a map for it
 				SoilMapKeys.Add(loc.Name);
 				FarmedMapsData[loc.Name] = StartMap(loc, (int)coords.X, (int)coords.Y);
 			}

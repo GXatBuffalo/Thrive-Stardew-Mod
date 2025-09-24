@@ -8,10 +8,11 @@ namespace Thrive.src.Domain
 
 		public GrowingCropStats(List<int> StarterHealthStats, int soilPropertyCount) 
 		{
-			HealthStats = StarterHealthStats.GetRange(0, soilPropertyCount);
+			HealthStats = StarterHealthStats.GetRange(0, soilPropertyCount); // initializes at default 0
 		}
 
 		// using the health from managed soil, return a quality for the crop growing on it
+		// temp formula
 		public int GetRandomQualityFromHealth(int soilProperties)
 		{
 			int counter = 0;
