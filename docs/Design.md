@@ -1,12 +1,14 @@
 ﻿# Thrive: A Stardew Valley Mod – Design Document
 
 **Author:** SomebodyUnown 
-**Last Updated:** 2025-09-11
+**Last Updated:** 2025-09-25
 **Project Status:** In Progress, v0.2.0alpha
+
+Thrive is a Stardew Valley mod inspired by sustainable farming systems, and transforms the base farming mechanic of Stardew into a much more strategic and engaging experience. This project is implemented in a domain-driven design using C#, SMAPI and some CIL. It creates a scalable system where crop performance is tied to player management of custom soil properties, ultimately rewarding players that manage their farm in a way that parallels a real-world ecosystem. This document outlines the project's architecture, key features, plans, and decisions, demonstrating a scalable and maintainable approach to mod and software development.
 
 ---
 # Table of Contents
-          
+
 1. [Overview](#1-overview)  
    - [Project Overview](#project-overview)
    - [Motivation](#motivation)
@@ -44,7 +46,7 @@ Rather than only optimizing for profit-per-day, players will weigh the **long-te
 Whether in vanilla Stardew Valley or in heavily-modded playthroughs with dozens of new crops, players often converge on the same handful of high-profit crops each season. This results in repetitive gameplay and underutilized plant types.  
 
 This mod changes that by rewarding:
-- **Crop diversity** — mixing crops for better soil health.  
+- **Crop diversity** — rotating crops for better soil health.  
 - **Long-term soil management** — avoiding over-exploitation of the same land.  
 - **Sustainable planning** — trading short-term gains for seasonal or multi-year advantages.
 
@@ -146,6 +148,14 @@ Project Structure:
   docs/
   tests/
 
+ **Domain Layer**: This layer describes the core data structures and behaviors for this mod's farming mechanics. Classes like SoilProperties.cs and BaseCropData.cs are part of this layer. They are self-contained and don't directly interact with the game engine, making them highly testable. The SoilProperties class, for instance, defines soil tile- its health attributes and the crop on it, as well as behaviors governing the two.
+
+ **Services Layer**: This layer defines logic on how the mod is run. The FarmingHandler.cs class is a key component here. It orchestrates the farming system, managing the SoilPropertiesMap, and through the ModEntry class, listens for in-game events to update the state of the soil and crops or to initialize necessary data.
+
+ **Items Layer**: This layer defines in-game items or tools players can use. For example, a tool to 'scan' soil and provide clear numbers to the player would be placed here. This layer be provided numbers from Domain through the Services layer. Items and tools in this layer would be added to the game through the Content Patcher mod.
+
+ **UI Layer**: This layer provides the player map data in a menu and an interface for the tools defined in the Items layer. 
+
 
 ### 2. Utility/Helper Functions
 If utility or helper methods grow in number:
@@ -159,7 +169,7 @@ For a highly decoupled project:
 
 ### 4. Scalability for Future Features
 If major new features are planned:
-- Create new submodules instead of overloading existing ones (e.g., a separate `Pests/` module if adding pest mechanics).
+- Create new submodules instead of overloading existing ones (e.g., a separate `CharacterNutrition/` module when adding nutrition mechanics for player and NPCs).
 - Ensure SaveData is versioned to allow safe upgrades without corrupting player saves.
 
 ### 5. Testing Strategy
@@ -206,7 +216,7 @@ graph TD
 
     ME --> Services
     ME --> UI
-    ME --> objects
+    ME --> Objects
     ME --> Events
 
     Services --> Domain
@@ -248,11 +258,11 @@ graph TD
 - [x] Update code logic allowing for dynamic number of soil properties.
 - [x] Define logic to adjust yields and quality based on crop health on harvest.
 - [x] Harmony patch StardewValley.Crops.harvest to adjust quality.
-- [ ] Update soil properties daily on all maps for all tiles with crops. 
+- [x] Update soil properties daily on all maps for all tiles with crops.
 - [ ] Define logic for customized objects that undo soil depletion.
 - [ ] Introduce custom player tools for measuring soil and crop health.
 - [ ] Add internationalization (i18n) support.
-- [ ] Fully integrate mechanics onto game triggers (save start, day start, planting, harvest, tool use, etc.).
+- [x] Integrate mechanics onto game events/triggers (save start, day start, planting, harvest, tool use, etc.).
 
 ### v0.3 – Balancing and Edge Cases
 - [x] Create test method to generate, save, and validate data for all in-game crops.
@@ -261,9 +271,9 @@ graph TD
 - [ ] Introduce mechanics tied to existing crop/seed context tags.
 - [ ] Add giant crop compatibility.
 - [ ] Add support for non-standard “crop-like” growable and harvestable objects.
-- [ ] Discourage farming outside farm maps for both lore and performance reasons.
+- [x] Discourage farming outside farm maps for both lore and performance reasons.
 - [ ] Add support for mid-save installation.
-- [ ] Add save-versioning for Thrive's moddata
+- [x] Add save-versioning for Thrive's moddata
 
 ### v0.4 - Player Interactions and User Interfaces
 - [ ] HUD elements for viewing soil health for custom tool/object
@@ -318,47 +328,67 @@ graph TD
 
 ## 6. Design Decisions and Trade-offs
 
-### Formula-based balancing instead of per-crop tuning
+### Performance Design and Decisions
 
-- Rather than manually assigning nutrient values to thousands of crops, the system derives values from existing crop properties using mathematical formulas.
+#### Removal of code that allows players to unload mod data until it is used
+- Configurations and code was originally written that allows players to toggle for saving then unloading mod data (custom data on farm maps) from memory except what is currently being used. This would have allowed players to decrease the amount of RAM in usage. Ultimately this was removed because each gameplay loop (an in-game day) would require me to reload modded farm data so I could update it at the end of every night. In addition, if a player has decided to manage additional farm maps, they would not neglect it anyways. Thus, the decision was made to always keep mod data in memory, sacrificing RAM which is already a precious resource for the average modded player.
 
-- *Trade-off*: This sacrifices fine-grained control over individual crop balance but ensures scalability and consistency.
+#### Tracking bounds of farmed tiles in a map
+- By tracking the minimum and maximum xy coords the farmer has tilled in a farm map, during the nightly updates on all maps, we can sigificantly reduce the number of checks on just whether a coordinate is null. At worst case scenario, we can at least skip the edges where tiles are unwalkable or uninteractable. At best case scenario, only rectangle exists such that all tiles hold either a tight path, sprinklers, or crops.
+- The trade off is taken in operations where the player hoes a tile. Then we would make checks on if its a map we know about or a map we care about. The worst case is when it is a map we know about, in which case I would have to compare the coordinates of the new tile vs the min and max x and y coordinates. I have reduced the operations done to as few as possible by using a vector2.min and .max instead of 4 if statements.
 
-### Randomized but consistent formulas per save
-
-- At the start of a save, multiple candidate formulas are available. A small subset is randomly chosen and applied consistently throughout that save.
-
-- *Trade-off*: This prevents players from becoming too accustomed to a fixed soil mechanic system, increasing replay variety. However, it introduces unpredictability or difficulty for players who want deterministic behavior.
-
-### Mana stored at map level, not soil level
-
-- Mana is implemented as a map-wide property rather than a per-tile soil property.
-
-- *Trade-off*: This sacrifices granularity in how mana might interact with individual soil tiles, but reduces data overhead (since soil data exists for every hoe-able tile).
-
-### Lazy initialization of soil and crop data
+#### Lazy initialization of soil and crop data
 
 - Data is only created when necessary (e.g., when a tile is first hoed, a crop is first planted/harvested, or a new crop type is introduced).
 
-- *Trade-off*: This minimizes memory and save file size, but introduces additional logic paths for “first use” events and potential edge cases.
+- *Trade-off*: This minimizes memory and save file size, but introduces additional logic paths for “first use” events and potential edge cases, increasing development time.
 
-### Excluding artisan machine balance from scope
+### Game Design
+
+#### Formula-based balancing instead of per-crop tuning
+
+- Rather than manually assigning nutrient values to thousands of crops, the system derives values from existing crop properties using C# delegates to assign mathematical formulas.
+
+- *Trade-off*: This sacrifices fine-grained control over individual crop balance but ensures scalability and consistency. In a typical modded game, there are hundreds if not thousands of crops. Individually accounting for each would be a nightmare. My design however requires a foundation on mathematical transformations I need to study for or ask advice about.
+
+#### Randomized but consistent formulas per save
+
+- At the start of a save, multiple delegates are available for assigning to needed soil properties. A small subset is randomly chosen and applied consistently throughout that save.
+
+- *Trade-off*: This prevents players from becoming too accustomed to a fixed soil mechanic system, increasing replay variety. This requires me to build multiple transformations that can roughly fit in a fixed range and to balance and test each transformation, increasing development time.
+
+#### Configurable number of soil properties
+- The player will be given an option to configure the number of soil properties from 1-5. This is in addition to 2 default un-removable properties. This allows the player to configure difficulty without undermining how the mod works, and can still remind the player about sustainability. This can add small amount of complexity in developing methods.
+
+#### Mana stored at map level, not soil level
+
+- Mana is implemented as a map-wide property rather than a per-tile soil property. 
+
+- *Trade-off*: This sacrifices granularity in how mana might interact with individual soil tiles, but reduces data overhead (since soil data exists for every hoed tile). However, it also introduces a different mechanic, increasing the variety of ways the game interacts with the player.
+
+#### Excluding artisan machine balance from scope
 
 - Interactions with artisan machines (e.g., kegs, preserves jars) are intentionally excluded from the current balancing system.
 
-- *Trade-off*: This may result in temporary imbalance relative to machine-based profits until a future phase but narrows the scope to soil and crop mechanics.
+- *Trade-off*: This may result in temporary imbalance relative to machine-based profits until a future phase but narrows the scope to soil and crop mechanics. However, if the balance is too far off, players may be discouraged from caring about crop quality and instead process all goods. Crop prices then need to be within a certain range of their processed prices 
 
-### Python for data analysis instead of C#
+#### Adding compatibility to multiple mods and accounting for edge cases
+
+- This vastly increases development time, but not accounting for compatibility discourages player usage and not accounting for edge cases and conflicts can vastly undermine the player experience
+
+### Tools
+
+#### Python for data analysis instead of C#
 
 - Data is exported from SMAPI and analyzed using python libraries numpy and matplotlib
 
-- *Trade-off*: Python provides rapid prototyping, easier statistical analysis, and better tooling for balancing compared to C#. However, this requires additional functionality for accumulating data and exporting it outside the game.
+- *Trade-off*: Python provides rapid prototyping, easier statistical analysis, and better tooling for balancing compared to C#. However, this requires additional functionality for accumulating data and exporting it outside the game. Additionally, I have to run it as a separate program instead of within the game. 
 
-### Harmony Patching
+#### Harmony Patching
 
 - Harmony is used to inject, change, or surpress game code during runtime. This allows for more control over game behaviors. eg. This enables us to alter the rewards from the harvesting action, etc.
 
-- *Trade-off*: Harmony patching is a powerful but risky tool. Injecting code at runtime, especially in popular methods to alter such as Crops.Harvest results in a high chance of errors and compatibility issuees.
+- *Trade-off*: Harmony patching is a powerful but risky tool. Injecting code at runtime, especially in popular methods to alter such as Crops.harvest results in a high chance of errors, game-breaking mistakes, and compatibility issues. 
 
 ---
 
@@ -383,11 +413,12 @@ graph TD
 
 ## 8. References
 
-1. Stardew Valley Modding API Reference – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs)  
-2. Beginner’s Guide to Modding – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/Get_Started)  
-3. Saving and Retrieving Data – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Data)  
-4. Harmony Patching & Transpilers Tutorial – [Stardew Modding Wiki](https://stardewmodding.wiki.gg/wiki/Tutorial:_Harmony_Patching#Transpilers)  
-5. Harmony Library Documentation – [harmony.pardeike.net](https://harmony.pardeike.net/articles/intro.html)  
-6. Stardew Valley Decompiled Code – Decompiled via ILSpy (for research purposes)  
-7. Stardew Valley Wiki (General Reference) – [Stardew Valley Wiki](https://stardewvalleywiki.com/Stardew_Valley_Wiki)  
-8. Generic Mod Config Menu (GMCM) – [GitHub Repository](https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors)  
+1. Stardew Valley Wiki (General Reference) – [Stardew Valley Wiki](https://stardewvalleywiki.com/Stardew_Valley_Wiki)  
+2. Stardew Valley Modding API Reference – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs)  
+3. Beginner’s Guide to Modding – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/Get_Started)  
+4. Stardew Valley Decompiled Code – via ILSpy
+5. C# Events and Handling -  [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Events)
+6. Saving and Retrieving Data – [Stardew Valley Wiki](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Data)  
+7. Harmony Patching & Transpilers Tutorial – [Stardew Modding Wiki](https://stardewmodding.wiki.gg/wiki/Tutorial:_Harmony_Patching#Transpilers)  
+8. Harmony Library Documentation – [harmony.pardeike.net](https://harmony.pardeike.net/articles/intro.html)  
+9. Generic Mod Config Menu (GMCM) – [GitHub Repository](https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors)  
