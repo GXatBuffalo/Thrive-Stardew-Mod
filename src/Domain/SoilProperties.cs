@@ -4,7 +4,7 @@ namespace Thrive.src.Domain
 {
 	public class SoilProperties
 	{
-		public List<double> SoilStats { get; set; }
+		public List<double> SoilStats { get; set; } = new();
 		public List<int> Health { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
 		public GrowingCropStats? CropHere { get; set; }
 		public string? CropID { get; set; }
@@ -50,6 +50,9 @@ namespace Thrive.src.Domain
 		// note: remember to act accordingly if no crop exists on this tile
 		public void UpdateSoilandCropHealth(Dictionary<string, Domain.BaseCropData> CropDict)
 		{
+			if (CropHere == null){
+				return;
+			}
 			Domain.BaseCropData cd = CropDict[CropID];
 
 		}

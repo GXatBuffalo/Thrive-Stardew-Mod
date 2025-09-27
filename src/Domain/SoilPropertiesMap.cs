@@ -13,8 +13,7 @@ namespace Thrive.src.Domain
 
 		public SoilProperties[,] MapData { get; set; }
 
-		public Vector2 minCoords { get; set; }
-		public Vector2 maxCoords { get; set; }
+		public int minX, minY, maxX, maxY;
 		
 		// dictionary to hold location of magic crops using their coords, value is mana drain
 		public Dictionary<(int, int), int> MagicCrops { get; set; } = new();		
@@ -24,37 +23,37 @@ namespace Thrive.src.Domain
 		{
 			MapMana = initialMana;
 			MapData = new SoilProperties[sizeY, sizeX];
-			minCoords = new Vector2(x, y);
-			maxCoords = new Vector2(x, y);
+			minX = x;
+			maxX = x;
+			minY = y;
+			maxY = y;
 		}
 
-		public void CheckMaybeUpdateNewCoords(Vector2 coords)
-		{
-			minCoords = Vector2.Min(minCoords, coords);
-			maxCoords = Vector2.Max(maxCoords, coords);
+		public void CheckMaybeUpdateNewCoords(int x, int y){
+			if (x < minX) { minX = x; }
+			else if (x > maxX) { maxX = x; }
+			if (y < minY) { minY = y; }
+			else if (y > maxY) { maxY = y; }
 		}
 
-		public void AddNewHoedTile(Vector2 coords, Random rand, int propertyCount, List<Formulas.SoilInitializationFormulas> appliedFormula)
+		public void AddNewHoedTile(Microsoft.Xna.Framework.Vector2 coords, Random rand, int propertyCount, List<Formulas.SoilInitializationFormulas> appliedFormula)
 		{
 			int Xcoord = (int)coords.X;
 			int Ycoord = (int)coords.Y;
 			if(MapData[Xcoord, Ycoord] is null){
 				MapData[Xcoord, Ycoord] = new SoilProperties(rand, propertyCount, Xcoord, Ycoord, appliedFormula);
-				CheckMaybeUpdateNewCoords(coords);
+				CheckMaybeUpdateNewCoords(Xcoord, Ycoord);
 			}
 		}
 
 		public void NightlyMapUpdate(Dictionary<string, Domain.BaseCropData> CropDict)
 		{
-			int minX = (int)minCoords.X;
-			int minY = (int)minCoords.Y;
-			int maxX = (int)maxCoords.X;
-			int maxY = (int)maxCoords.Y;
 			for (int i = minY; i <= maxY; i++)
 			{
 				for (int j = minX; j <= maxX; j++)
 				{
 					MapData[i, j].UpdateSoilandCropHealth(CropDict);
+					// note: needs to allocate mana points for possible growth
 				}
 			}
 		}

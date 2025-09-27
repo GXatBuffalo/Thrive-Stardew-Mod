@@ -8,7 +8,7 @@ namespace Thrive.src.Services
 {
 	public static class CropQuality_HarmonyPatch
 	{
-		private static IMonitor Monitor;
+		public static IMonitor Monitor;
 
 		// call this method from Entry class
 		internal static void Initialize(IMonitor monitor)
@@ -62,8 +62,8 @@ namespace Thrive.src.Services
 						 .InsertAndAdvance
 						 (
 								new CodeInstruction(OpCodes.Ldloc_1), // StardewValley.Object o,
-								new CodeInstruction(OpCodes.Ldarg_0), // this. (StardewValley.Crop using Crop.harvest)
-								new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Crop), "currentLocation")), // this.currentLocation
+								new CodeInstruction(OpCodes.Ldarg_0), // this. (a StardewValley.Crop object that is using Crop.harvest)
+								new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(StardewValley.Crop), "currentLocation")), // (this.)currentLocation
 								new CodeInstruction(OpCodes.Callvirt, getMapNameInfo), // get string name from this.currentLocation
 								new CodeInstruction(OpCodes.Ldarg_1), // xTile
 								new CodeInstruction(OpCodes.Ldarg_2), // yTile

@@ -4,7 +4,7 @@ namespace Thrive.src.Domain
 {
 	public class GrowingCropStats
 	{
-		public List<int> HealthStats { get; set; }
+		public List<int> HealthStats { get; set; } = new();
 
 		public GrowingCropStats(List<int> StarterHealthStats, int soilPropertyCount) 
 		{

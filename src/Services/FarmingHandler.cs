@@ -10,18 +10,15 @@ namespace Thrive.src.Services
 		public IMonitor Monitor { get; }
 		public IModHelper GameHandler { get; }
 
-		public List<string> SoilNutrientNames { get; set; } = new List<string> { "Nitro", "Phos", "Aera", "pH", "Microbes" };
-		public int propertyMin = 0;
-		public int propertyMax = 1000;
-
-		//keep the main farm map always loaded
-		public SoilPropertiesMap MainFarmMap { get; private set; }
+		public List<string> SoilNutrientNames { get; set; }
+		public int propertyMin { get; set; } = 0;
+		public int propertyMax { get; set; } = 1000;
 
 		// current implementation, but move to be used for only additional farms and maps 
-		public List<string> SoilMapKeys { get; set; }	
+		public List<string> SoilMapKeys { get; set; } = new();
 
 		// current implementation where all maps are kept in memory if player indicates to
-		public Dictionary<string, SoilPropertiesMap> FarmedMapsData { get; private set; }
+		public Dictionary<string, SoilPropertiesMap> FarmedMapsData { get; set; } = new();
 
 		//storage for data player has discovered for crops
 		public Dictionary<string, Domain.BaseCropData> KnownCropDict { get; set; }
@@ -40,6 +37,7 @@ namespace Thrive.src.Services
 			GameHandler = helper;
 			rand = new Random((int)Game1.uniqueIDForThisGame); // unique but consistent Random seed for each save file
 			SoilPropertiesCount = GameHandler.ReadConfig<ModConfig>().SoilPropertyCount + 2; // +2 to include default 'iridium' and 'mana' properties
+			SoilNutrientNames = new List<string> { "Nitro", "Phos", "Aera", "pH", "Microbes" };
 			InitializeFormulas();
 			LoadMapDataFromStorage(); 
 		}
@@ -96,7 +94,8 @@ namespace Thrive.src.Services
 		}
 
 		// run this method when ModEntry detects hoeing was done successfully
-		public void OnHoeingDone(GameLocation loc, Vector2 coords){
+		public void OnHoeingDone(GameLocation loc, Microsoft.Xna.Framework.Vector2 coords)
+		{
 			// if this is an existing location
 			if (SoilMapKeys.Contains(loc.Name))
 			{
@@ -105,7 +104,7 @@ namespace Thrive.src.Services
 			}
 			// check if a farm or greenhouse
 			else if (loc.IsFarm || loc.Name.ToLower().Contains(" farm") ||
-					  loc.IsGreenhouse || loc.Name.ToLower().Contains(" greenhouse"))
+						loc.IsGreenhouse || loc.Name.ToLower().Contains(" greenhouse"))
 			{
 				// if so, this is a new location, we take note of map name and initialize a map for it
 				SoilMapKeys.Add(loc.Name);

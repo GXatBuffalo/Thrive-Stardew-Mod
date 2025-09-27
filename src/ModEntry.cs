@@ -10,16 +10,14 @@ namespace Thrive.src
 	internal sealed class ModEntry : Mod
 	{
 		public FarmingHandler F_Handler { get; set; }
-		private ModConfig Config;
+		public ModConfig Config;
 
-		private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+		public void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
 		{
-			if (F_Handler == null) // initialize once
-			{
-				F_Handler = new FarmingHandler(Helper, Monitor);
-				//F_Handler.TestSetAllCropData();
-				Monitor.Log("FarmingHandler initialized.", LogLevel.Info);
-			}
+			Monitor.Log("Do OnSaveLoaded", LogLevel.Warn);
+			F_Handler = new FarmingHandler(Helper, Monitor);
+			//F_Handler.TestSetAllCropData();
+			Monitor.Log("FarmingHandler initialized.", LogLevel.Warn);
 		}
 
 		public override void Entry(IModHelper helper)
@@ -29,34 +27,41 @@ namespace Thrive.src
 			helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
 			helper.Events.Player.Warped += OnPlayerWarp;
 			helper.Events.World.TerrainFeatureListChanged += WasDirtHoed;
+			helper.Events.GameLoop.DayEnding += OnDayEnd;
 		}
 
 		// on warp, tell mod what map we are on. temporarily removed
-		private void OnPlayerWarp(object? sender, WarpedEventArgs e)
+		public void OnPlayerWarp(object? sender, WarpedEventArgs e)
 		{
 			GameLocation oldLocation = e.OldLocation;
 			GameLocation newLocation = e.NewLocation;
 		}
 
 		// when game is launched: setup the config menu
-		private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+		public void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
 		{
 			SetConfigMenu(sender, e);
 		}
 
+		public void OnDayEnd(object? sender, DayEndingEventArgs e){
+			F_Handler.NightlySoilUpdateAll();
+		}
+
 		// When any person (or entity like junimos or tractor) changes terrain, check if it is hoeing dirt
 		// relevance: when dirt is hoed in a farm map, soil properties should be initialized if not exist. update check boundaries
-		private void WasDirtHoed(object? sender, TerrainFeatureListChangedEventArgs e) {
+		public void WasDirtHoed(object? sender, TerrainFeatureListChangedEventArgs e)
+		{
 			foreach (var kvp in e.Added)
-			{ 
-				if (kvp.Value is HoeDirt){
+			{
+				if (kvp.Value is HoeDirt)
+				{
 					F_Handler.OnHoeingDone(e.Location, kvp.Key);
 				}
 			}
 		}
 
 		// edits game behavoirs and mechanics
-		private void HarmonyPatching()
+		public void HarmonyPatching()
 		{
 			var harmony = new Harmony(this.ModManifest.UniqueID);
 
@@ -73,7 +78,7 @@ namespace Thrive.src
 		}
 
 		// Generic Config Menu setup
-		private void SetConfigMenu(object? sender, GameLaunchedEventArgs e)
+		public void SetConfigMenu(object? sender, GameLaunchedEventArgs e)
 		{
 			// get Generic Mod Config Menu's API (if it's installed)
 			var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
