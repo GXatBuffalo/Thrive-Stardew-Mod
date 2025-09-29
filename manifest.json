@@ -1,8 +1,8 @@
 {
   "Name": "Thrive",
   "Author": "SomebodyUnown",
-  "Version": "0.2.0alpha",
-  "Description": "A Stardew mod that aims to add diversify gameplay by adding nutrition to soil, and eventually to players and even non-playable characters.",
+  "Version": "0.3.0-alpha",
+  "Description": "A Stardew mod inspired by sustainable farming that aims to add complexity and challenge to the farming mechanic.",
   "UniqueID": "SomebodyUnown.Thrive",
   "EntryDll": "Thrive.dll",
   "MinimumApiVersion": "4.3.2",

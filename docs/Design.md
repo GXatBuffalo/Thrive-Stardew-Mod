@@ -2,7 +2,7 @@
 
 **Author:** SomebodyUnown 
 **Last Updated:** 2025-09-26
-**Project Status:** In Progress, v0.2.0-alpha
+**Project Status:** In Progress, v0.3.0-alpha
 
 Thrive is a Stardew Valley mod inspired by sustainable farming systems, and transforms the base farming mechanic of Stardew into a much more strategic and engaging experience. This project is implemented in a domain-driven design using C#, SMAPI and some CIL. It creates a scalable system where crop performance is tied to player management of custom soil properties, ultimately rewarding players that manage their farm in a way that parallels a real-world ecosystem. This document outlines the project's architecture, key features, plans, and decisions, demonstrating a scalable and maintainable approach to mod and software development.
 
@@ -259,12 +259,27 @@ graph TD
 - [x] Define logic to adjust yields and quality based on crop health on harvest.
 - [x] Harmony patch StardewValley.Crops.harvest to adjust quality.
 - [x] Update soil properties daily on all maps for all tiles with crops.
-- [ ] Define logic for customized objects that undo soil depletion.
-- [ ] Introduce custom player tools for measuring soil and crop health.
-- [ ] Add internationalization (i18n) support.
 - [x] Integrate mechanics onto game events/triggers (save start, day start, planting, harvest, tool use, etc.).
 
-### v0.3 – Balancing and Edge Cases
+### v0.3 - Player Interactions, Tools, and User Interfaces
+- [ ] Define logic for customized objects that undo soil depletion.
+- [ ] Introduce custom player tools for measuring soil and crop health.
+- [ ] HUD elements for viewing soil health for custom tool/object
+- [ ] HUD elements for viewing crop depletion or replenishment rates for custom tool or 
+- [ ] Menu to view all known data.
+- [ ] Menu to view summarized data for the current map.
+- [ ] Add internationalization (i18n) support.
+- [ ] Integration with mod 'Better Game Menu'
+
+### v0.4 Multiplayer Support and Compatibility
+- [ ] Ensure soil data synchronization.
+- [ ] Ensure crop attribute synchronization.
+- [ ] Ensure consistency of formula selection.
+- [ ] Ensure consistent harvest attribute outcomes.
+- [ ] Add compatibility with mod “Tractor".
+- [ ] Add compatibility with mods “Walk of Life” and “Vanilla Plus Professions”.
+
+### v0.5 – Balancing and Edge Cases
 - [x] Create test method to generate, save, and validate data for all in-game crops.
 - [x] Implement script to analyze vanilla and modded crop data and results.
 - [ ] Balance base crop initialization formulas and soil depletion rates.
@@ -274,21 +289,6 @@ graph TD
 - [x] Discourage farming outside farm maps for both lore and performance reasons.
 - [ ] Add support for mid-save installation.
 - [x] Add save-versioning for Thrive's moddata
-
-### v0.4 - Player Interactions and User Interfaces
-- [ ] HUD elements for viewing soil health for custom tool/object
-- [ ] HUD elements for viewing crop depletion or replenishment rates for custom tool or 
-- [ ] Menu to view all known data.
-- [ ] Menu to view summarized data for the current map.
-- [ ] Integration with mod 'Better Game Menu'
-
-### v0.5 Multiplayer Support and Compatibility
-- [ ] Ensure soil data synchronization.
-- [ ] Ensure crop attribute synchronization.
-- [ ] Ensure consistency of formula selection.
-- [ ] Ensure consistent harvest attribute outcomes.
-- [ ] Add compatibility with mod “Tractor".
-- [ ] Add compatibility with mods “Walk of Life” and “Vanilla Plus Professions”.
 
 ### v0.6 - Beta Test 1
 - [ ] Recruit testers from the modding community to collect performance data and bug reports.
@@ -393,3 +393,4 @@ graph TD
 9. Generic Mod Config Menu (GMCM) – [GitHub Repository](https://github.com/spacechase0/StardewValleyMods/tree/develop/GenericModConfigMenu#for-c-mod-authors) 
 10. Example Modded Tool Code - [GitHub Repository](https://github.com/spacechase0/StardewValleyMods/tree/develop/_archived/SleepyEye)
 11. Spacecore Documentation - [GitHub Repository](https://github.com/spacechase0/StardewValleyMods/blob/develop/framework/SpaceCore/docs/README.md)
+12. Better Game Menu Guide  [GitHub Repository](https://github.com/KhloeLeclair/StardewMods/blob/main/BetterGameMenu/guide.md)
