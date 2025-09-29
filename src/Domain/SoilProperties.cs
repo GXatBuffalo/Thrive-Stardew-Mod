@@ -1,11 +1,10 @@
-﻿
+﻿using System;
 
 namespace Thrive.src.Domain
 {
 	public class SoilProperties
 	{
 		public List<double> SoilStats { get; set; } = new();
-		public List<int> Health { get; set; } = new List<int> { 100, 100, 100, 100, 100 };
 		public GrowingCropStats? CropHere { get; set; }
 		public string? CropID { get; set; }
 
@@ -46,15 +45,18 @@ namespace Thrive.src.Domain
 			CropID = null;
 		}
 
-		// STUB
-		// note: remember to act accordingly if no crop exists on this tile
-		public void UpdateSoilandCropHealth(Dictionary<string, Domain.BaseCropData> CropDict)
+		public void UpdateSoilandCropHealth(Dictionary<string, Domain.BaseCropData> CropDict, int soilPropertyCount)
 		{
 			if (CropHere == null){
 				return;
 			}
 			Domain.BaseCropData cd = CropDict[CropID];
-
+			for (int i = 0; i < soilPropertyCount; i++)
+			{
+				double diff = Math.Abs(cd.Requirements[i] - SoilStats[i]) + .0001;
+				// (if x >=.85=> -1, else (10 - log_0.85(abs(x))) / 10) * crop_growth_factor
+				CropHere.HealthStats[i] += ((diff >= 85 ) ? -1 : (10 - Math.Log(diff, 0.85)) / 10) * cd.BaseHealthGrowth[i];
+			}
 		}
 	}
 }

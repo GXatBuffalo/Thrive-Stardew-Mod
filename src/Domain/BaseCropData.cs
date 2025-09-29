@@ -6,8 +6,9 @@ namespace Thrive.src.Domain
 	{
 		/// NOTE: The formulas are strictly for LOGIC purposes at the current time. The numbers and formula is likely to be fiddled with before actual releases.
 
-		public List<int> StarterHealthStats { get; set; } // base stats a newly growing crop is set at
-
+		public List<double> StarterHealthStats { get; set; } = new(); // base stats a newly growing crop is set at
+		public List<double> BaseHealthGrowth { get; set; } = new(); // UNDEFINED, NO STUB
+ 
 		public List<double> Requirements { get; set; } = new(); // requirements to meet for a healthy crop
 
 		public List<double> SoilDeprecation { get; set; } = new(); // nightly drain (or regeneration) this crop would have on soil
@@ -17,7 +18,7 @@ namespace Thrive.src.Domain
 		// update on rebalance version
 		public BaseCropData(string seedID, Random rand, List<Formulas.CropRequirementFormula> reqFormulas, List<Formulas.CropDepreciationFormula> depreFormulas, int soilVarCount)
 		{
-			StarterHealthStats = Enumerable.Repeat(100, soilVarCount+2).ToList();
+			StarterHealthStats = Enumerable.Repeat(100.0, soilVarCount+2).ToList();
 
 			Game1.cropData.TryGetValue(seedID, out var seedData);
 			Game1.objectData.TryGetValue(seedData.HarvestItemId, out var produceData);

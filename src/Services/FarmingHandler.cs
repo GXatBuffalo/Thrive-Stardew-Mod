@@ -66,28 +66,10 @@ namespace Thrive.src.Services
 			}
 		}
 
-		// REMINDER: Fix numbers, REMOVE MAGIC NUMBERS
-		// CROP health not updated here yet!
-		// health management needs to account for players changing configs for soil property counts
-		public SoilProperties UpdateSoilAndCropHealth(SoilProperties sn)
-		{
-			Domain.BaseCropData cd = KnownCropDict[sn.CropID];
-			for (int x = 0; x < SoilPropertiesCount; x++)
-			{
-				if (Math.Abs(sn.SoilStats[x] - cd.Requirements[x * 2]) <= Math.Abs(cd.Requirements[x * 2 + 1]))
-					sn.Health[x] += 10;
-				else
-					sn.Health[x] -= 18;
-
-				sn.SoilStats[x] -= cd.SoilDeprecation[x];
-			}
-			return sn;
-		}
-
 		// ran at DayEnd, updates all existing soil tiles in all maps according to the crops grown on them
 		public void NightlySoilUpdateAll(){
 				foreach (KeyValuePair<string, SoilPropertiesMap> n_SPMap in FarmedMapsData) {
-				  FarmedMapsData[n_SPMap.Key].NightlyMapUpdate(KnownCropDict);
+				  FarmedMapsData[n_SPMap.Key].NightlyMapUpdate(KnownCropDict, SoilPropertiesCount);
 				}
 				GameHandler.Data.WriteSaveData("Thrive.FarmedMapsData", FarmedMapsData);
 			

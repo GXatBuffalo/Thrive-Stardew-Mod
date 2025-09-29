@@ -4,9 +4,9 @@ namespace Thrive.src.Domain
 {
 	public class GrowingCropStats
 	{
-		public List<int> HealthStats { get; set; } = new();
+		public List<double> HealthStats { get; set; } = new();
 
-		public GrowingCropStats(List<int> StarterHealthStats, int soilPropertyCount) 
+		public GrowingCropStats(List<double> StarterHealthStats, int soilPropertyCount) 
 		{
 			HealthStats = StarterHealthStats.GetRange(0, soilPropertyCount); // initializes at default 0
 		}
@@ -16,7 +16,7 @@ namespace Thrive.src.Domain
 		public int GetRandomQualityFromHealth(int soilProperties)
 		{
 			int counter = 0;
-			int average = 0;
+			double average = 0;
 			for (int i = 0; i < soilProperties; i++)
 			{
 				if (HealthStats[i] >= 100)
@@ -33,6 +33,4 @@ namespace Thrive.src.Domain
 			return quality;
 		}
 	}
-
-
 }

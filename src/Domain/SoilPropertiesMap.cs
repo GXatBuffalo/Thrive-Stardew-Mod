@@ -46,13 +46,13 @@ namespace Thrive.src.Domain
 			}
 		}
 
-		public void NightlyMapUpdate(Dictionary<string, Domain.BaseCropData> CropDict)
+		public void NightlyMapUpdate(Dictionary<string, Domain.BaseCropData> CropDict, int soilPropertyCount)
 		{
 			for (int i = minY; i <= maxY; i++)
 			{
 				for (int j = minX; j <= maxX; j++)
 				{
-					MapData[i, j].UpdateSoilandCropHealth(CropDict);
+					MapData[i, j].UpdateSoilandCropHealth(CropDict, soilPropertyCount);
 					// note: needs to allocate mana points for possible growth
 				}
 			}
