@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using System.ComponentModel.DataAnnotations;
 
-namespace Thrive.src
+namespace Thrive.src.APIs
 {
 	public sealed class ModConfig
 	{

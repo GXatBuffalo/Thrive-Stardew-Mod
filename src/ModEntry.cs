@@ -3,6 +3,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.TerrainFeatures;
+using Thrive.src.APIs;
+using Thrive.src.Items;
 using Thrive.src.Services;
 
 namespace Thrive.src
@@ -41,6 +43,7 @@ namespace Thrive.src
 		public void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
 		{
 			SetConfigMenu(sender, e);
+			SetSpaceCore();
 		}
 
 		public void OnDayEnd(object? sender, DayEndingEventArgs e){
@@ -175,6 +178,11 @@ namespace Thrive.src
 					max: 5,
 					interval: 1
 			);
+		}
+
+		public void SetSpaceCore(){
+			var spaceCore = this.Helper.ModRegistry.GetApi<ISpaceCoreApi>("spacechase0.SpaceCore");
+			spaceCore.RegisterSerializerType(typeof(SurveyorTool));
 		}
 	}
 }
