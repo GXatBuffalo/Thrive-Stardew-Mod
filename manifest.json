@@ -2,9 +2,15 @@
   "Name": "Thrive",
   "Author": "SomebodyUnown",
   "Version": "0.3.0-alpha",
-  "Description": "A Stardew mod inspired by sustainable farming that aims to add complexity and challenge to the farming mechanic.",
+  "Description": "A Stardew mod that aims to add complexity and variety to the farming mechanic. Inspired by sustainable farming.",
   "UniqueID": "SomebodyUnown.Thrive",
   "EntryDll": "Thrive.dll",
   "MinimumApiVersion": "4.3.2",
   "UpdateKeys": []
+  "Dependencies": [
+   {
+      "UniqueID": "spacechase0.SpaceCore",
+      "IsRequired": true
+   }
+]
 }
