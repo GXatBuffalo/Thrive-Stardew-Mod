@@ -262,13 +262,13 @@ graph TD
 - [x] Integrate mechanics onto game events/triggers (save start, day start, planting, harvest, tool use, etc.).
 
 ### v0.3 - Player Interactions, Tools, and User Interfaces
-- [ ] Define logic for customized objects that undo soil depletion.
 - [ ] Introduce custom player tools for measuring soil and crop health.
+- [x] Add internationalization (i18n) support.
+- [ ] Define logic for customized objects that undo soil depletion.
 - [ ] HUD elements for viewing soil health for custom tool/object
 - [ ] HUD elements for viewing crop depletion or replenishment rates for custom tool or 
 - [ ] Menu to view all known data.
 - [ ] Menu to view summarized data for the current map.
-- [ ] Add internationalization (i18n) support.
 - [ ] Integration with mod 'Better Game Menu'
 
 ### v0.4 Multiplayer Support and Compatibility
