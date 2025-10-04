@@ -14,12 +14,10 @@ namespace Thrive.src.Items
 
 		public const int standardStaminaReduction = 0;
 		public static Texture2D toolTexture { get; set; }
+		public static string toolTextureKey { get; set; }
 		[XmlElement("instantUse")]
 		public readonly NetBool instantUse = new NetBool(true);
-		[XmlIgnore]
-		private string _description { get; set; } = "Tool to check soil conditions.";
-		[XmlIgnore]
-		protected string displayName { get; set; } = "Surveyor";
+		private Texture2D ItemTexture;
 
 		public SurveyorTool(IModHelper helper, IMonitor monitor)
 		{
@@ -29,16 +27,17 @@ namespace Thrive.src.Items
 
 		protected override Item GetOneNew()
 		{
-			throw new NotImplementedException();
+			return new SurveyorTool(this.GameHandler, this.Monitor);
 		}
 
-		public void loadDescription()
+		protected override string loadDescription()
 		{
-			GameHandler.Translation.Get("Thrive.Surveyor.Name");
+			return GameHandler.Translation.Get("Thrive.Surveyor.Name");
 		}
-		public void loadDisplayName()
+		protected override string loadDisplayName()
 		{
-			GameHandler.Translation.Get("Thrive.Surveyor.Description");
+			return GameHandler.Translation.Get("Thrive.Surveyor.Description");
 		}
+
 	}
 }

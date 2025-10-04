@@ -20,6 +20,27 @@ namespace Thrive.src
 			F_Handler = new FarmingHandler(Helper, Monitor);
 			//F_Handler.TestSetAllCropData();
 			Monitor.Log("FarmingHandler initialized.", LogLevel.Warn);
+			Helper.ConsoleCommands.Add(
+				name: "Thrive.NewSurveyorTool",
+				documentation: "Places new surveyor tool in inventory.",
+				callback: NewSurveyorToolCommand
+		);
+		}
+
+		public void NewSurveyorToolCommand(string command, string[] args)
+		{
+			// Check if a player is loaded in a save
+			if (!Context.IsWorldReady)
+			{
+				this.Monitor.Log("Save is not yet loaded! SurveyorTool has nowhere to go.", LogLevel.Info);
+				return;
+			}
+
+			var tool = new SurveyorTool(this.Helper, this.Monitor);
+
+			Game1.player.addItemToInventoryBool(tool);
+
+			this.Monitor.Log($"Added one {tool.DisplayName} to your inventory.", LogLevel.Info);
 		}
 
 		public override void Entry(IModHelper helper)
