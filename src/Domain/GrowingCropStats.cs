@@ -5,6 +5,7 @@ namespace Thrive.src.Domain
 	public class GrowingCropStats
 	{
 		public List<double> HealthStats { get; set; } = new();
+		public bool isMagic	{  get; set; } = false;
 
 		public GrowingCropStats(List<double> StarterHealthStats, int soilPropertyCount) 
 		{

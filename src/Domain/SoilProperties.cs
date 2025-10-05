@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Thrive.src.Domain
+﻿namespace Thrive.src.Domain
 {
 	public class SoilProperties
 	{
@@ -27,10 +25,11 @@ namespace Thrive.src.Domain
 		public void AddCrop(string cid, BaseCropData cData, int soilPropertyCount){
 			CropHere = new GrowingCropStats(cData.StarterHealthStats, soilPropertyCount);
 			CropID = cid;
+			CropHere.isMagic = cData.isMagic;
 		}
 
 		// unassign the crop stored on this tile
-		public void DeleteCrop(){
+		public void RemoveCrop(){
 			CropHere = null;
 			CropID = null;
 		}

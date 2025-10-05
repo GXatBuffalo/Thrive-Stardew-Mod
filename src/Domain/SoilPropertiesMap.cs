@@ -1,8 +1,4 @@
-﻿
-using Microsoft.Xna.Framework;
-using StardewValley.Locations;
-
-namespace Thrive.src.Domain
+﻿namespace Thrive.src.Domain
 {
 	public class SoilPropertiesMap
 	{
@@ -12,11 +8,13 @@ namespace Thrive.src.Domain
 		public double ManaMax { get; set; }  // limit on Mana on the map. 
 
 		public SoilProperties[,] MapData { get; set; }
+		public int totalCrops { get; set; } = 0; 
 
 		public int minX, minY, maxX, maxY;
 		
 		// dictionary to hold location of magic crops using their coords, value is mana drain
-		public Dictionary<(int, int), int> MagicCrops { get; set; } = new();		
+		public Dictionary<(int, int), int> MagicCrops { get; set; } = new();
+		public Dictionary<(int, int), string> magicMapObjects { get; set; } = new();
 
 		// Constructor. Parameters are map size and mana map starts with.
 		public SoilPropertiesMap(int sizeX, int sizeY, int initialMana, int x, int y)

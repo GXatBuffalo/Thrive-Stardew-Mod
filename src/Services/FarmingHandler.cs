@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewValley;
 using Thrive.src.APIs;
 using Thrive.src.Domain;
+using Thrive.src.Items;
 
 namespace Thrive.src.Services
 {
@@ -99,7 +100,11 @@ namespace Thrive.src.Services
 		// harmony patch - needs map name from within StardewValley.Crop.harvest to fix
 		public int OnHarvest_GetCropQuality(StardewValley.Object o, string map_name, int x, int y)
 		{
-			return FarmedMapsData[map_name].MapData[y, x].CropHere.GetRandomQualityFromHealth(SoilPropertiesCount);
+			
+			int qual = FarmedMapsData[map_name].MapData[y, x].CropHere.GetRandomQualityFromHealth(SoilPropertiesCount);
+			FarmedMapsData[map_name].MapData[y, x].RemoveCrop();
+			return qual;
+
 		}
 
 		public static int NewForageQuality(StardewValley.Object o, int x, int y)
@@ -107,36 +112,36 @@ namespace Thrive.src.Services
 			return 1;
 		}
 
-		/*
-		public void TestSetAllCropData()
-		{
-			var seedData = Game1.cropData;
-			Dictionary<string, List<int>> results = new();
-			Random rand = new Random((int)Game1.uniqueIDForThisGame);
-			foreach (KeyValuePair<string, StardewValley.GameData.Crops.CropData> kvp in seedData)
+			/*
+			public void TestSetAllCropData()
 			{
-				Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
-				Monitor.Log(kvp.Value.HarvestItemId, LogLevel.Trace);
-				try
+				var seedData = Game1.cropData;
+				Dictionary<string, List<int>> results = new();
+				Random rand = new Random((int)Game1.uniqueIDForThisGame);
+				foreach (KeyValuePair<string, StardewValley.GameData.Crops.CropData> kvp in seedData)
 				{
-					results.Add(kvp.Key,
-						new List<int>{
-						produceData.Price,
-						produceData.Edibility is -300 or 0 ? rand.Next(1,300) : Math.Abs(produceData.Edibility),
-						(int)(16.0 * Math.Log(0.018 * produceData.Price + 1.0, Math.E)),
-						kvp.Value.DaysInPhase.Sum(),
-						produceData.Category
-						}
-					);
-					KnownCropDict[kvp.Key] = new CropData(kvp.Key, rand);
+					Game1.objectData.TryGetValue(kvp.Value.HarvestItemId, out var produceData);
+					Monitor.Log(kvp.Value.HarvestItemId, LogLevel.Trace);
+					try
+					{
+						results.Add(kvp.Key,
+							new List<int>{
+							produceData.Price,
+							produceData.Edibility is -300 or 0 ? rand.Next(1,300) : Math.Abs(produceData.Edibility),
+							(int)(16.0 * Math.Log(0.018 * produceData.Price + 1.0, Math.E)),
+							kvp.Value.DaysInPhase.Sum(),
+							produceData.Category
+							}
+						);
+						KnownCropDict[kvp.Key] = new CropData(kvp.Key, rand);
+					}
+					catch { };
 				}
-				catch { };
+				gameHandler.Data.WriteSaveData("Thrive.knowcropdict", KnownCropDict);
+				gameHandler.Data.WriteSaveData("Thrive.knowcropdict_vanilla", results);
+				gameHandler.Data.WriteJsonFile("exported-data.json", KnownCropDict);
+				gameHandler.Data.WriteJsonFile("exported-data-v.json", results);
 			}
-			gameHandler.Data.WriteSaveData("Thrive.knowcropdict", KnownCropDict);
-			gameHandler.Data.WriteSaveData("Thrive.knowcropdict_vanilla", results);
-			gameHandler.Data.WriteJsonFile("exported-data.json", KnownCropDict);
-			gameHandler.Data.WriteJsonFile("exported-data-v.json", results);
+			*/
 		}
-		*/
-	}
 }
