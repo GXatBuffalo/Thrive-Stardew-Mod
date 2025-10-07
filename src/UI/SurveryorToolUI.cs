@@ -11,6 +11,9 @@ namespace Thrive.src.UI
 {
 	internal class SurveryorToolUI
 	{
+		public static Texture2D toolTexture { get; set; }
+		public static string toolTextureKey { get; set; }
+		private Texture2D ItemTexture;
 
 		public SurveryorToolUI() { }
 

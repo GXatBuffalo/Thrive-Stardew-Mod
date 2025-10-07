@@ -3,6 +3,7 @@ using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using System.Xml.Serialization;
+using Thrive.src.UI;
 
 namespace Thrive.src.Items
 {
@@ -13,11 +14,9 @@ namespace Thrive.src.Items
 		public IModHelper GameHandler { get; }
 
 		public const int standardStaminaReduction = 0;
-		public static Texture2D toolTexture { get; set; }
-		public static string toolTextureKey { get; set; }
 		[XmlElement("instantUse")]
 		public readonly NetBool instantUse = new NetBool(true);
-		private Texture2D ItemTexture;
+		public SurveryorToolUI toolUI { get; set; }
 
 		public SurveyorTool(IModHelper helper, IMonitor monitor)
 		{
